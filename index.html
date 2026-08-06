@@ -283,6 +283,7 @@ textarea.form-input{min-height:100px;resize:vertical;font-family:var(--sans)}
 .checklist-body ol{margin-left:1.4rem;margin-bottom:.6rem}
 .checklist-body li{margin-bottom:.25rem}
 .checklist-body .cl-note{font-size:.72rem;color:var(--text-3);font-style:italic;margin-bottom:.8rem}
+.cl-self-check-note{background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:var(--r);padding:.6rem .8rem;font-size:.75rem;color:var(--text-2);line-height:1.5;margin:.8rem 0}
 </style>
 </head>
 <body>
@@ -394,22 +395,9 @@ textarea.form-input{min-height:100px;resize:vertical;font-family:var(--sans)}
         <li>The last step spells out why the final answer is NOT ambiguous and why it is defensible</li>
       </ol>
 
-      <h3>F. ChatGPT Setup</h3>
-      <ol>
-        <li>Own ChatGPT account with ChatGPT 5.5 Pro access</li>
-        <li>Model GPT 5.5 Pro, Thinking effort Extended</li>
-        <li>Memory OFF, verified in Settings before running</li>
-        <li>Fresh chat every time, no reused context</li>
-        <li>Prompt pasted as is, no extra context, hints, or "please show your work"</li>
-      </ol>
-
-      <h3>G. Record Model Response</h3>
-      <ol>
-        <li>Full model response pasted verbatim, not just the final answer, no edits or summary</li>
-        <li>ChatGPT share link grabbed and pasted in the form</li>
-        <li>Chat left live, not deleted after submitting</li>
-        <li>Both fields filled, full response plus share link. Missing either is a rejection</li>
-      </ol>
+      <div class="cl-self-check-note">
+        <strong>F &amp; G. ChatGPT Response &amp; Prompt Testing</strong> — Test your prompt yourself using ChatGPT 5.5 Pro with Extended Thinking. The QC checker does not verify your ChatGPT response or share link. If the checker shows PASS or FAIL, that is based on metadata fields only. You must confirm the model failure yourself before submitting.
+      </div>
 
       <h3>H. Failure Checks</h3>
       <ol>
@@ -438,7 +426,7 @@ textarea.form-input{min-height:100px;resize:vertical;font-family:var(--sans)}
         <li>Every step names how I got there, the URL, and exactly where on the page the fact lives</li>
         <li>Answer field is atomic, a single word, number, date, name, or short phrase</li>
         <li>No lead in like "the answer is" in the answer field</li>
-        <li>Full model response pasted verbatim AND the ChatGPT share link included</li>
+        <li>Full model response pasted verbatim in the task form</li>
         <li>Every fact pulled matches exactly what is on the live page, not memory, not paraphrase</li>
       </ol>
 
@@ -782,16 +770,9 @@ function runChecks(d) {
     verifyCount >= 3 ? 'pass' : 'warn',
     verifyCount + ' Verify step(s) — ensure every prompt constraint has its own verification');
 
-  const justLink = d.modelResponse && /^https?:\/\/\S+$/m.test(d.modelResponse.trim());
-  add('Model Response', 'G.txt', 'Response contains substantive text (not just a link)',
-    !justLink ? 'pass' : 'warn',
-    justLink ? 'Response appears to be only a URL — paste the full verbatim ChatGPT output' : '');
-
-  const hasShare = /chatgpt\.com\/share\//i.test(d.modelResponse || '') ||
-                   /chatgpt\.com\/share\//i.test(d.rawText);
-  add('Model Response', 'G.lnk', 'ChatGPT share link present',
-    hasShare ? 'pass' : 'fail',
-    !hasShare ? 'No chatgpt.com/share/ link found' : '');
+  add('Model Response', 'G.txt', 'Model response field detected',
+    d.modelResponse ? 'pass' : 'fail',
+    d.modelResponse ? 'Response text found' : 'No model response detected');
 
   add('Failure Checks', 'H.st', 'Response marked as failed',
     d.failureStatus && d.failureStatus.toLowerCase() === 'yes' ? 'pass' : 'fail',
@@ -1003,6 +984,10 @@ document.getElementById('metadata-input').addEventListener('keydown', e => {
     e.preventDefault();
     document.getElementById('run-btn').click();
   }
+});
+
+document.getElementById('metadata-input').addEventListener('paste', () => {
+  setTimeout(() => { document.getElementById('run-btn').click(); }, 100);
 });
 
 // ═════════════════════════════════
