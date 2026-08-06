@@ -177,6 +177,85 @@ body{background:var(--bg);color:var(--text-1);font-family:var(--sans);font-size:
 .howto ol{margin-left:1.2rem;margin-top:.3rem}
 .howto li{margin-bottom:.2rem}
 .howto code{font-family:var(--mono);font-size:.72rem;background:var(--surface-alt);border:1px solid var(--border);padding:.1em .3em;border-radius:2px}
+/* ─── Comments ─── */
+.comments-section{margin-top:3rem;border-top:2px solid var(--border-strong);padding-top:2rem}
+.comments-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:.5rem}
+.comments-title{font-family:var(--mono);font-size:1.1rem;font-weight:700;letter-spacing:.04em}
+.comments-count{font-family:var(--mono);font-size:.65rem;color:var(--text-3);background:var(--surface-alt);border:1px solid var(--border);padding:.15em .5em;border-radius:2px}
+
+.comment-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;margin-bottom:1.5rem}
+.form-row{margin-bottom:.8rem}
+.form-row:last-child{margin-bottom:0}
+.form-label{display:block;font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:.35rem}
+.form-label .req{color:var(--fail);margin-left:.15rem}
+.form-input{
+  width:100%;padding:.55rem .75rem;
+  font-family:var(--sans);font-size:.82rem;line-height:1.5;
+  background:var(--bg);color:var(--text-1);
+  border:1px solid var(--border);border-radius:var(--r);
+  outline:none;
+}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)}
+.form-input::placeholder{color:var(--text-3)}
+textarea.form-input{min-height:100px;resize:vertical;font-family:var(--sans)}
+
+.img-upload{position:relative}
+.img-upload-area{
+  border:2px dashed var(--border);border-radius:var(--r);
+  padding:1.2rem;text-align:center;cursor:pointer;
+  transition:border-color .15s,background .15s;
+  font-size:.78rem;color:var(--text-3);
+}
+.img-upload-area:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.img-upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.img-preview{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem}
+.img-preview-item{position:relative;width:80px;height:80px;border-radius:var(--r);overflow:hidden;border:1px solid var(--border)}
+.img-preview-item img{width:100%;height:100%;object-fit:cover}
+.img-preview-item .img-remove{
+  position:absolute;top:2px;right:2px;width:18px;height:18px;
+  background:var(--fail);color:#fff;border:none;border-radius:50%;
+  font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  line-height:1;
+}
+.form-actions{display:flex;gap:.6rem;align-items:center}
+.form-note{font-size:.7rem;color:var(--text-3);margin-left:auto;font-style:italic}
+.form-error{color:var(--fail);font-size:.78rem;margin-top:.4rem;display:none}
+
+.comment-list{display:flex;flex-direction:column;gap:.8rem}
+.comment-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.1rem;transition:border-color .15s}
+.comment-meta{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap}
+.comment-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--accent);color:var(--accent-text);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:.65rem;font-weight:700;
+  flex-shrink:0;text-transform:uppercase;
+}
+.comment-author{font-size:.82rem;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.comment-date{font-family:var(--mono);font-size:.6rem;color:var(--text-3);flex-shrink:0}
+.comment-body{font-size:.82rem;line-height:1.6;color:var(--text-2);white-space:pre-wrap;word-break:break-word}
+.comment-images{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem}
+.comment-images img{max-width:200px;max-height:160px;border-radius:var(--r);border:1px solid var(--border);cursor:pointer;transition:transform .15s}
+.comment-images img:hover{transform:scale(1.03)}
+.comment-email-tag{font-family:var(--mono);font-size:.58rem;color:var(--text-3);background:var(--surface-alt);padding:.1em .4em;border-radius:2px;border:1px solid var(--border)}
+.no-comments{text-align:center;padding:2rem 1rem;color:var(--text-3);font-size:.85rem;font-style:italic}
+
+.img-lightbox{
+  position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;
+  display:none;align-items:center;justify-content:center;cursor:pointer;
+}
+.img-lightbox.open{display:flex}
+.img-lightbox img{max-width:90vw;max-height:90vh;border-radius:4px;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+
+.gh-link{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-family:var(--mono);font-size:.7rem;color:var(--accent);
+  text-decoration:none;padding:.35rem .7rem;border:1px solid var(--border);
+  border-radius:var(--r);transition:background .15s;
+}
+.gh-link:hover{background:var(--surface-alt)}
+.gh-link svg{width:14px;height:14px;fill:currentColor}
+
 @media(max-width:600px){
   .page{padding:1.5rem 1rem 3rem}
   .hdr-title{font-size:1.4rem}
@@ -184,6 +263,7 @@ body{background:var(--bg);color:var(--text-1);font-family:var(--sans);font-size:
   .parsed-grid{grid-template-columns:1fr}
   .parsed-key{margin-bottom:-.15rem}
   .chk-detail{padding-left:0}
+  .comment-images img{max-width:140px;max-height:120px}
 }
 </style>
 </head>
@@ -217,9 +297,89 @@ body{background:var(--bg);color:var(--text-1);font-family:var(--sans);font-size:
   </div>
 
   <div id="results"></div>
+
+  <!-- ═══ COMMENTS SECTION ═══ -->
+  <div class="comments-section">
+    <div class="comments-hdr">
+      <div class="comments-title">Community Feedback</div>
+      <span class="comments-count" id="comment-count">0 comments</span>
+    </div>
+
+    <div class="comment-form" id="comment-form">
+      <div class="form-row">
+        <label class="form-label">Email <span class="req">*</span></label>
+        <input type="email" class="form-input" id="cf-email" placeholder="your@email.com" required>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Name <span class="req">*</span></label>
+        <input type="text" class="form-input" id="cf-name" placeholder="Your name">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Message <span class="req">*</span></label>
+        <textarea class="form-input" id="cf-message" placeholder="Describe the issue or share your feedback..."></textarea>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Attach Images</label>
+        <div class="img-upload">
+          <div class="img-upload-area" id="img-drop-area">
+            Click or drag images here (JPG, PNG, GIF — max 2 MB each)
+            <input type="file" id="cf-images" multiple accept="image/jpeg,image/png,image/gif,image/webp">
+          </div>
+          <div class="img-preview" id="img-preview"></div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-run" id="cf-submit">Submit Feedback</button>
+        <span class="form-note">Once sent, comments cannot be edited</span>
+      </div>
+      <div class="form-error" id="cf-error"></div>
+    </div>
+
+    <div class="comment-list" id="comment-list">
+      <div class="no-comments" id="no-comments">No comments yet. Be the first to share your feedback.</div>
+    </div>
+
+    <div style="margin-top:1rem;display:flex;gap:.6rem;flex-wrap:wrap">
+      <a class="gh-link" href="https://github.com/PSPMANI/project-seal-qc/issues" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Discuss on GitHub
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="img-lightbox" id="lightbox">
+  <img id="lightbox-img" src="" alt="Full size">
 </div>
 
 <script>
+// ═══ Code Protection ═══
+(function(){
+  document.addEventListener('contextmenu',function(e){e.preventDefault();});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='F12')e.preventDefault();
+    if(e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='i'))e.preventDefault();
+    if(e.ctrlKey&&e.shiftKey&&(e.key==='J'||e.key==='j'))e.preventDefault();
+    if(e.ctrlKey&&e.shiftKey&&(e.key==='C'||e.key==='c'))e.preventDefault();
+    if(e.ctrlKey&&(e.key==='U'||e.key==='u'))e.preventDefault();
+    if(e.ctrlKey&&(e.key==='S'||e.key==='s'))e.preventDefault();
+  });
+  (function _dt(){
+    var t=new Image();
+    Object.defineProperty(t,'id',{get:function(){
+      document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;font-size:1.2rem;color:#888">Access denied</div>';
+      throw new Error();
+    }});
+    setTimeout(function(){console.log(t);},100);
+    setInterval(function(){
+      var s=performance.now();debugger;
+      if(performance.now()-s>100){
+        document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;font-size:1.2rem;color:#888">Access denied</div>';
+      }
+    },1000);
+  })();
+})();
+
 function parseMetadata(raw) {
   const text = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const d = {
@@ -680,6 +840,225 @@ document.getElementById('metadata-input').addEventListener('keydown', e => {
     document.getElementById('run-btn').click();
   }
 });
+
+// ═════════════════════════════════
+// COMMENTS
+// ═════════════════════════════════
+const STORAGE_KEY = 'qc-checker-comments';
+let pendingImages = [];
+
+function loadComments() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveComments(comments) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(comments)); }
+  catch (e) {
+    if (e.name === 'QuotaExceededError') {
+      alert('Storage full. Try removing image attachments from older comments or clearing browser data.');
+    }
+  }
+}
+
+function getInitials(name, email) {
+  if (name && name.trim()) {
+    const parts = name.trim().split(/\s+/);
+    return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0].slice(0, 2).toUpperCase();
+  }
+  return email ? email[0].toUpperCase() : '?';
+}
+
+function avatarColor(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  const hues = [210, 160, 340, 30, 270, 120, 190, 0, 45, 300];
+  return hues[Math.abs(hash) % hues.length];
+}
+
+function formatDate(ts) {
+  const d = new Date(ts);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const h = d.getHours(), m = d.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + ' at ' + h12 + ':' + String(m).padStart(2,'0') + ' ' + ampm;
+}
+
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function renderComments() {
+  const comments = loadComments();
+  const list = document.getElementById('comment-list');
+  const noComments = document.getElementById('no-comments');
+  const countEl = document.getElementById('comment-count');
+
+  countEl.textContent = comments.length + ' comment' + (comments.length !== 1 ? 's' : '');
+
+  if (comments.length === 0) {
+    noComments.style.display = '';
+    list.innerHTML = '';
+    list.appendChild(noComments);
+    return;
+  }
+
+  noComments.style.display = 'none';
+  let html = '';
+
+  comments.forEach(c => {
+    const hue = avatarColor(c.email || c.name || '');
+    const initials = getInitials(c.name, c.email);
+    html += '<div class="comment-card">';
+    html += '<div class="comment-meta">';
+    html += '<div class="comment-avatar" style="background:hsl(' + hue + ',55%,45%)">' + initials + '</div>';
+    html += '<div class="comment-author">' + escHtml(c.name || 'Anonymous') + '</div>';
+    html += '<span class="comment-email-tag">' + escHtml(c.email) + '</span>';
+    html += '<span class="comment-date">' + formatDate(c.timestamp) + '</span>';
+    html += '</div>';
+    html += '<div class="comment-body">' + escHtml(c.message) + '</div>';
+
+    if (c.images && c.images.length > 0) {
+      html += '<div class="comment-images">';
+      c.images.forEach(img => {
+        html += '<img src="' + img + '" alt="Attached image" loading="lazy" onclick="openLightbox(this.src)">';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+
+  const noCommentsEl = list.querySelector('.no-comments');
+  list.innerHTML = html;
+  if (noCommentsEl) list.appendChild(noCommentsEl);
+}
+
+// Image upload handling
+const imgInput = document.getElementById('cf-images');
+const imgPreview = document.getElementById('img-preview');
+const dropArea = document.getElementById('img-drop-area');
+
+function addImageFiles(files) {
+  Array.from(files).forEach(file => {
+    if (!file.type.startsWith('image/')) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert(file.name + ' exceeds 2 MB limit.');
+      return;
+    }
+    if (pendingImages.length >= 4) {
+      alert('Maximum 4 images per comment.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      pendingImages.push(e.target.result);
+      renderImagePreviews();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderImagePreviews() {
+  imgPreview.innerHTML = '';
+  pendingImages.forEach((src, i) => {
+    const div = document.createElement('div');
+    div.className = 'img-preview-item';
+    div.innerHTML = '<img src="' + src + '" alt="Preview"><button class="img-remove" data-idx="' + i + '">&times;</button>';
+    imgPreview.appendChild(div);
+  });
+  imgPreview.querySelectorAll('.img-remove').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      pendingImages.splice(parseInt(btn.dataset.idx), 1);
+      renderImagePreviews();
+    });
+  });
+}
+
+imgInput.addEventListener('change', () => {
+  addImageFiles(imgInput.files);
+  imgInput.value = '';
+});
+
+dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.style.borderColor = 'var(--accent)'; });
+dropArea.addEventListener('dragleave', () => { dropArea.style.borderColor = ''; });
+dropArea.addEventListener('drop', e => {
+  e.preventDefault();
+  dropArea.style.borderColor = '';
+  if (e.dataTransfer.files.length) addImageFiles(e.dataTransfer.files);
+});
+
+// Submit comment
+document.getElementById('cf-submit').addEventListener('click', () => {
+  const email = document.getElementById('cf-email').value.trim();
+  const name = document.getElementById('cf-name').value.trim();
+  const message = document.getElementById('cf-message').value.trim();
+  const errEl = document.getElementById('cf-error');
+  errEl.style.display = 'none';
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEl.textContent = 'Please enter a valid email address.';
+    errEl.style.display = 'block';
+    document.getElementById('cf-email').focus();
+    return;
+  }
+  if (!name) {
+    errEl.textContent = 'Please enter your name.';
+    errEl.style.display = 'block';
+    document.getElementById('cf-name').focus();
+    return;
+  }
+  if (!message) {
+    errEl.textContent = 'Please enter a message.';
+    errEl.style.display = 'block';
+    document.getElementById('cf-message').focus();
+    return;
+  }
+
+  const comments = loadComments();
+  comments.unshift({
+    email, name, message,
+    images: pendingImages.slice(),
+    timestamp: Date.now()
+  });
+  saveComments(comments);
+
+  document.getElementById('cf-email').value = '';
+  document.getElementById('cf-name').value = '';
+  document.getElementById('cf-message').value = '';
+  pendingImages = [];
+  renderImagePreviews();
+  renderComments();
+
+  const card = document.querySelector('.comment-card');
+  if (card) {
+    card.style.animation = 'fadeUp .35s ease-out';
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+});
+
+// Lightbox
+function openLightbox(src) {
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lightbox-img').src = src;
+  lb.classList.add('open');
+}
+document.getElementById('lightbox').addEventListener('click', function() {
+  this.classList.remove('open');
+  document.getElementById('lightbox-img').src = '';
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('lightbox').classList.remove('open');
+    document.getElementById('lightbox-img').src = '';
+  }
+});
+
+// Load comments on page load
+renderComments();
 </script>
 </body>
 </html>
