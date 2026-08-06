@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Automated QC checker for Project Seal tasks. Paste your metadata.md and get instant quality checks.">
+<meta name="author" content="P Manikanta">
+<title>QC Checker — Project Seal</title>
+<style>
+:root {
+  --bg: #F9F8F4;
+  --surface: #FFFFFF;
+  --surface-alt: #F2F1EC;
+  --border: #DDD9CF;
+  --border-strong: #C8C4B8;
+  --text-1: #1A1810;
+  --text-2: #5C5848;
+  --text-3: #8E8A7C;
+  --accent: #1B4FC2;
+  --accent-hover: #153FA0;
+  --accent-text: #FFFFFF;
+  --pass: #1A7A3F;
+  --pass-bg: #EBF7EF;
+  --pass-border: #A8D8B6;
+  --fail: #C42B2B;
+  --fail-bg: #FCEFEF;
+  --fail-border: #E8B4B4;
+  --warn: #9A6508;
+  --warn-bg: #FCF5E8;
+  --warn-border: #DDC580;
+  --blocked: #7C4DFF;
+  --blocked-bg: #F0EBFF;
+  --mono: 'Cascadia Code','JetBrains Mono','Fira Code','Consolas','SF Mono','Monaco',monospace;
+  --sans: 'Segoe UI',system-ui,-apple-system,'Helvetica Neue',sans-serif;
+  --serif: Georgia,'Times New Roman',serif;
+  --r: 3px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#0D0C0B;--surface:#171615;--surface-alt:#1E1D1A;
+  --border:#2C2A24;--border-strong:#3D3A32;
+  --text-1:#EAE7DF;--text-2:#9C9889;--text-3:#6D695C;
+  --accent:#5B90F5;--accent-hover:#7FAAF8;--accent-text:#0D0C0B;
+  --pass:#50D470;--pass-bg:#0E1E14;--pass-border:#1F4C2A;
+  --fail:#F06464;--fail-bg:#281414;--fail-border:#5C2020;
+  --warn:#E8B030;--warn-bg:#241C0C;--warn-border:#5A4618;
+  --blocked:#A07CFF;--blocked-bg:#1C1630;
+}}
+:root[data-theme="dark"]{
+  --bg:#0D0C0B;--surface:#171615;--surface-alt:#1E1D1A;
+  --border:#2C2A24;--border-strong:#3D3A32;
+  --text-1:#EAE7DF;--text-2:#9C9889;--text-3:#6D695C;
+  --accent:#5B90F5;--accent-hover:#7FAAF8;--accent-text:#0D0C0B;
+  --pass:#50D470;--pass-bg:#0E1E14;--pass-border:#1F4C2A;
+  --fail:#F06464;--fail-bg:#281414;--fail-border:#5C2020;
+  --warn:#E8B030;--warn-bg:#241C0C;--warn-border:#5A4618;
+  --blocked:#A07CFF;--blocked-bg:#1C1630;
+}
+:root[data-theme="light"]{
+  --bg:#F9F8F4;--surface:#FFFFFF;--surface-alt:#F2F1EC;
+  --border:#DDD9CF;--border-strong:#C8C4B8;
+  --text-1:#1A1810;--text-2:#5C5848;--text-3:#8E8A7C;
+  --accent:#1B4FC2;--accent-hover:#153FA0;--accent-text:#FFFFFF;
+  --pass:#1A7A3F;--pass-bg:#EBF7EF;--pass-border:#A8D8B6;
+  --fail:#C42B2B;--fail-bg:#FCEFEF;--fail-border:#E8B4B4;
+  --warn:#9A6508;--warn-bg:#FCF5E8;--warn-border:#DDC580;
+  --blocked:#7C4DFF;--blocked-bg:#F0EBFF;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text-1);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.page{max-width:860px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+.hdr{margin-bottom:2rem;border-bottom:2px solid var(--border-strong);padding-bottom:1.5rem}
+.hdr-eyebrow{font-family:var(--mono);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3);margin-bottom:.4rem}
+.hdr-title{font-family:var(--mono);font-size:1.9rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;line-height:1.15;margin-bottom:.4rem}
+.hdr-sub{font-size:.88rem;color:var(--text-2);max-width:48ch}
+.input-wrap{margin-bottom:2rem}
+.input-label{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.input-label span{font-family:var(--sans);font-size:.78rem;letter-spacing:0;text-transform:none;color:var(--text-2)}
+#metadata-input{
+  width:100%;min-height:260px;padding:1rem 1.1rem;
+  font-family:var(--mono);font-size:.78rem;line-height:1.65;
+  background:var(--surface);color:var(--text-1);
+  border:1px solid var(--border);border-radius:var(--r);
+  resize:vertical;outline:none;tab-size:2;
+}
+#metadata-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)}
+#metadata-input::placeholder{color:var(--text-3);font-style:italic}
+.actions{display:flex;gap:.6rem;margin-top:.75rem;align-items:center}
+.btn{
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+  padding:.6rem 1.4rem;border:none;border-radius:var(--r);cursor:pointer;
+  transition:background .15s,transform .1s;font-weight:600;
+}
+.btn:active{transform:scale(.97)}
+.btn-run{background:var(--accent);color:var(--accent-text)}
+.btn-run:hover{background:var(--accent-hover)}
+.btn-run:disabled{opacity:.45;cursor:default;transform:none}
+.btn-clear{background:var(--surface-alt);color:var(--text-2);border:1px solid var(--border)}
+.btn-clear:hover{background:var(--border);color:var(--text-1)}
+.btn-copy{background:var(--surface-alt);color:var(--text-2);border:1px solid var(--border);margin-left:auto}
+.btn-copy:hover{background:var(--border);color:var(--text-1)}
+.parse-error{
+  background:var(--fail-bg);border:1px solid var(--fail-border);border-radius:var(--r);
+  padding:.75rem 1rem;margin-top:.75rem;font-size:.82rem;color:var(--fail);display:none;
+}
+#results{display:none}
+#results.show{display:block;animation:fadeUp .35s ease-out}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.verdict{
+  padding:1.1rem 1.3rem;border-radius:var(--r);margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:.8rem;
+}
+.verdict.pass{background:var(--pass);color:#fff}
+.verdict.fail{background:var(--fail);color:#fff}
+.verdict.blocked{background:var(--blocked);color:#fff}
+.verdict-icon{
+  width:2.2rem;height:2.2rem;border-radius:50%;
+  background:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;font-weight:700;
+}
+.verdict-body{flex:1}
+.verdict-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+.verdict-text{font-size:1rem;font-weight:600;margin-top:.1rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:2rem}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.7rem .9rem;text-align:center}
+.stat-n{font-family:var(--mono);font-size:1.3rem;font-weight:700;font-variant-numeric:tabular-nums}
+.stat-n.p{color:var(--pass)}.stat-n.w{color:var(--warn)}.stat-n.f{color:var(--fail)}
+.stat-l{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-top:.15rem}
+.parsed{
+  background:var(--surface-alt);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem 1.2rem;margin-bottom:2rem;font-size:.82rem;
+}
+.parsed-title{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:.6rem}
+.parsed-grid{display:grid;grid-template-columns:auto 1fr;gap:.25rem .8rem}
+.parsed-key{font-family:var(--mono);font-size:.72rem;color:var(--text-3);white-space:nowrap}
+.parsed-val{font-size:.82rem;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.parsed-val.missing{color:var(--fail);font-style:italic}
+.section{margin-bottom:1.5rem}
+.sec-hdr{
+  display:flex;align-items:center;gap:.6rem;padding-bottom:.45rem;
+  border-bottom:1px solid var(--border);margin-bottom:.5rem;
+}
+.sec-id{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);flex-shrink:0}
+.sec-name{font-size:.92rem;font-weight:600;flex:1}
+.sec-badge{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;
+  padding:.12em .5em;border-radius:2px;font-weight:600;flex-shrink:0;
+}
+.sec-badge.p{background:var(--pass-bg);color:var(--pass);border:1px solid var(--pass-border)}
+.sec-badge.w{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-border)}
+.sec-badge.f{background:var(--fail-bg);color:var(--fail);border:1px solid var(--fail-border)}
+.checks{list-style:none}
+.chk{display:flex;gap:.5rem;align-items:flex-start;padding:.35rem 0;border-bottom:1px solid color-mix(in srgb,var(--border) 50%,transparent)}
+.chk:last-child{border-bottom:none}
+.chk-icon{
+  width:1rem;height:1rem;border-radius:50%;flex-shrink:0;margin-top:.18rem;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.55rem;font-weight:700;
+}
+.chk-icon.p{background:var(--pass-bg);color:var(--pass);border:1px solid var(--pass-border)}
+.chk-icon.w{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-border)}
+.chk-icon.f{background:var(--fail-bg);color:var(--fail);border:1px solid var(--fail-border)}
+.chk-body{flex:1;min-width:0}
+.chk-row{display:flex;gap:.4rem;align-items:baseline}
+.chk-id{font-family:var(--mono);font-size:.62rem;color:var(--text-3);flex-shrink:0;min-width:2.2rem}
+.chk-text{font-size:.82rem;color:var(--text-1)}
+.chk-detail{font-size:.74rem;color:var(--text-2);margin-top:.15rem;font-style:italic;padding-left:2.6rem}
+.chk-detail.wn{color:var(--warn)}
+.chk-detail.fl{color:var(--fail)}
+.footer{margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:.62rem;color:var(--text-3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.footer a{color:var(--accent);text-decoration:none}
+.howto{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem 1.2rem;margin-bottom:1.5rem;font-size:.82rem;color:var(--text-2);line-height:1.6;
+}
+.howto-title{font-weight:600;color:var(--text-1);margin-bottom:.3rem;font-size:.88rem}
+.howto ol{margin-left:1.2rem;margin-top:.3rem}
+.howto li{margin-bottom:.2rem}
+.howto code{font-family:var(--mono);font-size:.72rem;background:var(--surface-alt);border:1px solid var(--border);padding:.1em .3em;border-radius:2px}
+@media(max-width:600px){
+  .page{padding:1.5rem 1rem 3rem}
+  .hdr-title{font-size:1.4rem}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .parsed-grid{grid-template-columns:1fr}
+  .parsed-key{margin-bottom:-.15rem}
+  .chk-detail{padding-left:0}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="hdr">
+    <div class="hdr-eyebrow">Project Seal</div>
+    <h1 class="hdr-title">QC Checker</h1>
+    <p class="hdr-sub">Paste your metadata.md content below. Automated checks run instantly in your browser — nothing is uploaded.</p>
+    <div style="font-family:var(--mono);font-size:.65rem;color:var(--text-3);margin-top:.6rem;letter-spacing:.04em">By P Manikanta · <a href="https://github.com/PSPMANI" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">@PSPMANI</a></div>
+  </header>
+
+  <div class="howto">
+    <div class="howto-title">How to use</div>
+    <ol>
+      <li>Open your task's <code>metadata.md</code> file</li>
+      <li>Select all (<kbd>Ctrl+A</kbd>) and copy (<kbd>Ctrl+C</kbd>)</li>
+      <li>Paste into the box below and click <strong>Run QC Audit</strong></li>
+    </ol>
+  </div>
+
+  <div class="input-wrap">
+    <div class="input-label">Input <span>— full metadata.md contents</span></div>
+    <textarea id="metadata-input" placeholder="Paste the full contents of your metadata.md file here..."></textarea>
+    <div class="actions">
+      <button class="btn btn-run" id="run-btn">Run QC Audit</button>
+      <button class="btn btn-clear" id="clear-btn" style="display:none">Clear</button>
+      <button class="btn btn-copy" id="copy-btn" style="display:none">Copy Results</button>
+    </div>
+    <div class="parse-error" id="parse-error"></div>
+  </div>
+
+  <div id="results"></div>
+</div>
+
+<script>
+function parseMetadata(raw) {
+  const text = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const d = {
+    domain: null, prompt: null, answer: null,
+    modelResponse: null, failureStatus: null, failureCount: null,
+    failureJustification: null, trajectorySteps: [], sources: [], rawText: text
+  };
+
+  const dm = text.match(/Your domain for this task is:\s*(.+)/i);
+  if (dm) d.domain = dm[1].trim();
+
+  const answerSplit = text.split(/\n\s*\n\s*\n*\s*Write the Answer:/i);
+  if (answerSplit.length > 1) {
+    const before = answerSplit[0];
+    const lines = before.split('\n');
+    let lastInstr = -1;
+    for (let i = 0; i < lines.length; i++) {
+      if (/How to write a good prompt/i.test(lines[i]) ||
+          /Please ensure your prompt is between/i.test(lines[i]) ||
+          /Write the Prompt:/i.test(lines[i]) ||
+          /Craft a clear,?\s*natural/i.test(lines[i]) ||
+          /The question should be complex/i.test(lines[i])) {
+        lastInstr = i;
+      }
+    }
+    if (lastInstr >= 0) {
+      let i = lastInstr + 1;
+      while (i < lines.length && !lines[i].trim()) i++;
+      const pLines = [];
+      while (i < lines.length) {
+        if (lines[i].trim()) pLines.push(lines[i].trim());
+        else if (pLines.length > 0) {
+          let j = i + 1;
+          while (j < lines.length && !lines[j].trim()) j++;
+          if (j < lines.length && !lines[j].match(/Write the Answer/i)) { i = j; continue; }
+          else break;
+        }
+        i++;
+      }
+      d.prompt = pLines.join(' ');
+    }
+  }
+
+  const am = text.match(/Write your answer below\s*\n+\s*(.+)/i);
+  if (am) d.answer = am[1].trim();
+
+  const respSplit = text.split(/Paste model response below/i);
+  if (respSplit.length > 1) {
+    const chunk = respSplit[1].split(/\n\s*\n\s*Did Response Fail\?/i)[0];
+    const cleaned = chunk.split('\n').map(l => l.trim()).filter(l => l).join('\n');
+    d.modelResponse = cleaned;
+  }
+
+  const fs = text.match(/Did Response Fail\?\s*\n+\s*(Yes|No)/i);
+  if (fs) d.failureStatus = fs[1].trim();
+
+  const fc = text.match(/(\d+)\/(\d+)\s+Response Failed/i);
+  if (fc) d.failureCount = { failed: parseInt(fc[1]), total: parseInt(fc[2]) };
+
+  const justSplit = text.split(/Response Failure Justification/i);
+  if (justSplit.length > 1) {
+    const chunk = justSplit[1].split(/Write the Golden Trajectory:/i)[0];
+    const lines = chunk.split('\n').map(l => l.trim()).filter(l =>
+      l && !/^In 2\s*[-–—]\s*4 sentences/i.test(l) &&
+      !/please explain why/i.test(l) &&
+      !/If there was not/i.test(l) &&
+      !/please state/i.test(l)
+    );
+    d.failureJustification = lines.join(' ');
+  }
+
+  const trajSplit = text.split(/Write the Golden Trajectory:/i);
+  if (trajSplit.length > 1) {
+    const beforeSrc = trajSplit[1].split(/List the Verification Sources:/i)[0];
+    const instrEnd = beforeSrc.search(/Step\s+1:/i);
+    const stepsText = instrEnd >= 0 ? beforeSrc.slice(instrEnd) : beforeSrc;
+    const stepPattern = /Step\s+(\d+):\s*(\w+):\s*([\s\S]*?)(?=\nStep\s+\d+:|$)/g;
+    let m;
+    while ((m = stepPattern.exec(stepsText)) !== null) {
+      d.trajectorySteps.push({
+        number: parseInt(m[1]),
+        type: m[2].trim(),
+        text: m[3].trim().replace(/\n+/g, ' ')
+      });
+    }
+  }
+
+  const srcSplit = text.split(/List the Verification Sources:/i);
+  if (srcSplit.length > 1) {
+    d.sources = srcSplit[1].split('\n').map(l => l.trim()).filter(l => /^https?:\/\//.test(l));
+  }
+
+  return d;
+}
+
+function runChecks(d) {
+  const R = [];
+  const add = (sec, id, text, status, detail) =>
+    R.push({ section: sec, id, text, status, detail: detail || '' });
+
+  add('Metadata Gate', '0.1', 'Domain field detected', d.domain ? 'pass' : 'fail',
+    d.domain ? 'Domain: ' + d.domain : 'Could not find "Your domain for this task is:"');
+  add('Metadata Gate', '0.2', 'Prompt text detected', d.prompt ? 'pass' : 'fail',
+    d.prompt ? d.prompt.split(/\s+/).length + ' words extracted' : 'Could not extract prompt');
+  add('Metadata Gate', '0.3', 'Answer field detected', d.answer ? 'pass' : 'fail',
+    d.answer ? 'Answer: "' + d.answer + '"' : 'Could not find answer');
+  add('Metadata Gate', '0.4', 'Model response detected', d.modelResponse ? 'pass' : 'fail');
+  add('Metadata Gate', '0.5', 'Failure justification detected', d.failureJustification ? 'pass' : 'fail');
+  add('Metadata Gate', '0.6', 'Trajectory steps detected', d.trajectorySteps.length > 0 ? 'pass' : 'fail',
+    d.trajectorySteps.length + ' step(s) found');
+  add('Metadata Gate', '0.7', 'Verification sources detected', d.sources.length > 0 ? 'pass' : 'fail',
+    d.sources.length + ' URL(s) found');
+
+  const blocked = R.some(r => r.section === 'Metadata Gate' && r.status === 'fail');
+  if (blocked) return { verdict: 'BLOCKED', results: R, stats: stats(R) };
+
+  const pWords = d.prompt.split(/\s+/).filter(w => w);
+  const wc = pWords.length;
+  add('Prompt Rules', 'B.wc', 'Word count 70–150', wc >= 70 && wc <= 150 ? 'pass' : 'fail',
+    'Counted ' + wc + ' words');
+
+  const ynStart = /^(is|are|was|were|does|did|do|can|could|will|would|has|have|shall|should)\s/i;
+  const isYN = ynStart.test(d.prompt.trim());
+  add('Prompt Rules', 'B.yn', 'Not a yes/no question', !isYN ? 'pass' : 'fail',
+    isYN ? 'Prompt starts with "' + d.prompt.split(' ')[0] + '" — may expect yes/no' : '');
+
+  const extRef = /(see (the |attached |following )?(table|image|figure|chart|diagram|attachment))|refer to|as shown in/i;
+  add('Prompt Rules', 'B.sc', 'Self-contained — no external references',
+    !extRef.test(d.prompt) ? 'pass' : 'fail',
+    extRef.test(d.prompt) ? 'Prompt references external content' : '');
+
+  const timeW = /\b(currently|as of (today|now|\d{4})|recently|latest|most recent|at present|at the time of writing|this year|this month|last year)\b/i;
+  const hasTW = timeW.test(d.prompt);
+  add('Prompt Rules', 'B.tw', 'No floating time words', !hasTW ? 'pass' : 'warn',
+    hasTW ? 'Found time-sensitive language — verify answer stability' : '');
+
+  const procI = /\b(first search|first look up|first find|then search|then look|then verify|then check|after that search|next step|please show|explain your reasoning|show your work)\b/i;
+  add('Prompt Rules', 'B.pi', 'No process instructions to the solver',
+    !procI.test(d.prompt) ? 'pass' : 'fail',
+    procI.test(d.prompt) ? 'Prompt tells the solver how to work' : '');
+
+  const srcHint = /\b(according to wikipedia|on wikipedia|google it|search for it on|look up on|check (the )?website)\b/i;
+  add('Prompt Rules', 'B.sh', 'No source hints in the prompt',
+    !srcHint.test(d.prompt) ? 'pass' : 'fail',
+    srcHint.test(d.prompt) ? 'Prompt names a specific source' : '');
+
+  const aWords = d.answer.split(/\s+/).filter(w => w);
+  add('Answer Quality', 'C.at', 'Answer is atomic',
+    aWords.length <= 8 ? 'pass' : 'warn',
+    aWords.length + ' word(s): "' + d.answer + '"');
+
+  const leadIn = /^(the answer is|it is|answer:|it's)\s/i;
+  add('Answer Quality', 'C.li', 'No lead-in text',
+    !leadIn.test(d.answer.trim()) ? 'pass' : 'fail',
+    leadIn.test(d.answer.trim()) ? 'Remove lead-in from the answer field' : '');
+
+  const ynAns = /^(yes|no|true|false)$/i.test(d.answer.trim());
+  add('Answer Quality', 'C.yn', 'Not yes/no or true/false',
+    !ynAns ? 'pass' : 'fail');
+
+  add('Sources', 'D.ct', 'At least 3 URLs listed',
+    d.sources.length >= 3 ? 'pass' : 'fail', d.sources.length + ' URL(s)');
+
+  const doms = [...new Set(d.sources.map(u => {
+    try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; }
+  }))];
+  add('Sources', 'D.dm', 'At least 3 distinct domains',
+    doms.length >= 3 ? 'pass' : 'fail',
+    doms.length + ' domain(s): ' + doms.join(', '));
+
+  const wikiN = d.sources.filter(u => /wikipedia\.org/i.test(u)).length;
+  add('Sources', 'D.wp', 'Wikipedia policy check',
+    wikiN === 0 ? 'pass' : 'warn',
+    wikiN > 0 ? wikiN + ' Wikipedia URL(s). Checklist says blocked — some reviewers accept them. Confirm with your project lead.' : 'No Wikipedia URLs');
+
+  const bad = [
+    [/youtube\.com|youtu\.be/i, 'YouTube'],
+    [/twitter\.com|x\.com/i, 'Twitter/X'],
+    [/facebook\.com|fb\.com/i, 'Facebook'],
+    [/instagram\.com/i, 'Instagram'],
+    [/reddit\.com/i, 'Reddit'],
+    [/tiktok\.com/i, 'TikTok'],
+    [/docs\.google\.com/i, 'Google Docs'],
+    [/google\.com\/search/i, 'Google Search'],
+    [/bing\.com\/search/i, 'Bing Search'],
+    [/grokpedia/i, 'Grokpedia'],
+    [/web\.archive\.org/i, 'Wayback Machine'],
+    [/vimeo\.com/i, 'Vimeo'],
+  ];
+  const inv = [];
+  d.sources.forEach(u => bad.forEach(([p, n]) => { if (p.test(u)) inv.push(n); }));
+  add('Sources', 'D.iv', 'No invalid source types',
+    inv.length === 0 ? 'pass' : 'fail',
+    inv.length > 0 ? 'Found: ' + inv.join(', ') : '');
+
+  const badFmt = d.sources.filter(u => !/^https?:\/\/.+\..+\/.+/.test(u));
+  add('Sources', 'D.path', 'All URLs have a page path (not just homepage)',
+    badFmt.length === 0 ? 'pass' : 'warn',
+    badFmt.length > 0 ? badFmt.length + ' URL(s) may be bare homepages — verify they point to a specific page' : '');
+
+  const steps = d.trajectorySteps;
+  add('Golden Trajectory', 'E.ct', 'Sufficient step count',
+    steps.length >= 6 ? 'pass' : steps.length >= 3 ? 'warn' : 'fail',
+    steps.length + ' steps (expect 6+ for 3-source tasks)');
+
+  const validT = ['Search', 'Fetch', 'Verify'];
+  const oddT = steps.filter(s => !validT.includes(s.type));
+  add('Golden Trajectory', 'E.sfv', 'Steps follow Search / Fetch / Verify labels',
+    oddT.length === 0 ? 'pass' : 'warn',
+    oddT.length > 0 ? 'Non-standard labels: ' + oddT.map(s => 'Step ' + s.number + ' (' + s.type + ')').join(', ') : '');
+
+  const trajAllText = steps.map(s => s.text).join(' ');
+  const notInTraj = d.sources.filter(u => !trajAllText.includes(u));
+  add('Golden Trajectory', 'E.src', 'Every source URL appears in the trajectory',
+    notInTraj.length === 0 ? 'pass' : 'fail',
+    notInTraj.length > 0 ? 'Missing from trajectory: ' + notInTraj.join(', ') : 'All source URLs referenced');
+
+  if (d.answer) {
+    const early = steps.filter(s => s.number <= 2 && s.type === 'Search');
+    const ansInEarly = early.some(s => s.text.toLowerCase().includes(d.answer.toLowerCase()));
+    add('Golden Trajectory', 'E.ans', 'Answer not in early search queries',
+      !ansInEarly ? 'pass' : 'warn',
+      ansInEarly ? '"' + d.answer + '" appears in Step 1–2 search queries — may give away the answer' : '');
+  }
+
+  if (steps.length > 0) {
+    const last = steps[steps.length - 1];
+    const conv = last.type === 'Verify' && last.text.length > 100;
+    add('Golden Trajectory', 'E.lst', 'Final step explains answer convergence',
+      conv ? 'pass' : 'warn',
+      conv ? '' : 'Final step should explain why the answer is unambiguous');
+  }
+
+  const verifyCount = steps.filter(s => s.type === 'Verify').length;
+  add('Golden Trajectory', 'E.con', 'Constraint coverage check',
+    verifyCount >= 3 ? 'pass' : 'warn',
+    verifyCount + ' Verify step(s) — ensure every prompt constraint has its own verification');
+
+  const justLink = d.modelResponse && /^https?:\/\/\S+$/m.test(d.modelResponse.trim());
+  add('Model Response', 'G.txt', 'Response contains substantive text (not just a link)',
+    !justLink ? 'pass' : 'warn',
+    justLink ? 'Response appears to be only a URL — paste the full verbatim ChatGPT output' : '');
+
+  const hasShare = /chatgpt\.com\/share\//i.test(d.modelResponse || '') ||
+                   /chatgpt\.com\/share\//i.test(d.rawText);
+  add('Model Response', 'G.lnk', 'ChatGPT share link present',
+    hasShare ? 'pass' : 'fail',
+    !hasShare ? 'No chatgpt.com/share/ link found' : '');
+
+  add('Failure Checks', 'H.st', 'Response marked as failed',
+    d.failureStatus && d.failureStatus.toLowerCase() === 'yes' ? 'pass' : 'fail',
+    'Status: ' + (d.failureStatus || 'not found'));
+
+  if (d.failureCount) {
+    add('Failure Checks', 'H.ct', 'At least 1 response failed',
+      d.failureCount.failed > 0 ? 'pass' : 'fail',
+      d.failureCount.failed + '/' + d.failureCount.total + ' failed');
+  }
+
+  if (d.failureJustification) {
+    const sents = d.failureJustification.split(/[.!?]+\s/).filter(s => s.trim().length > 8);
+    add('Failure Checks', 'H.jl', 'Justification is 2–4 sentences',
+      sents.length >= 2 && sents.length <= 5 ? 'pass' : 'warn',
+      sents.length + ' sentence(s)');
+
+    const mentionsAns = d.answer && d.failureJustification.toLowerCase().includes(d.answer.toLowerCase());
+    add('Failure Checks', 'H.ja', 'Justification mentions the correct answer',
+      mentionsAns ? 'pass' : 'warn',
+      !mentionsAns ? '"' + d.answer + '" not found in justification' : '');
+
+    add('Failure Checks', 'H.na', 'Justification is not N/A',
+      !/^n\/?a$/i.test(d.failureJustification.trim()) ? 'pass' : 'fail');
+  }
+
+  const trajUrls = [];
+  steps.forEach(s => {
+    const ms = s.text.match(/https?:\/\/[^\s,)>]+/g);
+    if (ms) trajUrls.push(...ms);
+  });
+  const srcNotInTraj = d.sources.filter(u => !trajUrls.some(t => t.includes(u) || u.includes(t)));
+  add('Cross-checks', 'I.url', 'Source list matches trajectory URLs 1:1',
+    srcNotInTraj.length === 0 ? 'pass' : 'warn',
+    srcNotInTraj.length > 0 ? srcNotInTraj.length + ' source URL(s) not found in any trajectory step' : '');
+
+  add('Cross-checks', 'I.dom', 'At least 3 URLs from different domains (I.9)',
+    doms.length >= 3 ? 'pass' : 'fail',
+    doms.length + ' distinct domain(s)');
+
+  const s = stats(R);
+  let verdict = 'PASS';
+  if (s.fail > 0) verdict = 'FAIL';
+  return { verdict, results: R, stats: s };
+}
+
+function stats(R) {
+  return {
+    pass: R.filter(r => r.status === 'pass').length,
+    warn: R.filter(r => r.status === 'warn').length,
+    fail: R.filter(r => r.status === 'fail').length,
+  };
+}
+
+function renderResults(data, outcome) {
+  const el = document.getElementById('results');
+  const { verdict, results, stats: st } = outcome;
+  const ic = { pass: '✓', warn: '!', fail: '✗', PASS: '✓', FAIL: '✗', BLOCKED: '⚠' };
+  const vc = verdict.toLowerCase();
+
+  const sections = [];
+  const seen = new Set();
+  results.forEach(r => {
+    if (!seen.has(r.section)) { seen.add(r.section); sections.push({ name: r.section, checks: [] }); }
+    sections.find(s => s.name === r.section).checks.push(r);
+  });
+
+  const secIds = { 'Metadata Gate': '0', 'Prompt Rules': 'B', 'Answer Quality': 'C', 'Sources': 'D',
+    'Golden Trajectory': 'E', 'Model Response': 'G', 'Failure Checks': 'H', 'Cross-checks': 'I' };
+
+  const secBadge = sec => {
+    if (sec.checks.some(c => c.status === 'fail')) return 'f';
+    if (sec.checks.some(c => c.status === 'warn')) return 'w';
+    return 'p';
+  };
+
+  let html = '';
+  html += '<div class="verdict ' + vc + '"><div class="verdict-icon">' + ic[verdict] + '</div>';
+  html += '<div class="verdict-body"><div class="verdict-label">QC Outcome</div>';
+  html += '<div class="verdict-text">' + verdict;
+  if (verdict === 'PASS') html += ' — Ready to submit';
+  else if (verdict === 'FAIL') html += ' — Fix ' + st.fail + ' issue(s) before submitting';
+  else html += ' — Cannot run QC until metadata is complete';
+  html += '</div></div></div>';
+
+  html += '<div class="stats">';
+  html += '<div class="stat"><div class="stat-n p">' + st.pass + '</div><div class="stat-l">Passed</div></div>';
+  html += '<div class="stat"><div class="stat-n w">' + st.warn + '</div><div class="stat-l">Warnings</div></div>';
+  html += '<div class="stat"><div class="stat-n f">' + st.fail + '</div><div class="stat-l">Failed</div></div>';
+  html += '</div>';
+
+  html += '<div class="parsed"><div class="parsed-title">Parsed Fields</div><div class="parsed-grid">';
+  const pf = [
+    ['Domain', data.domain],
+    ['Prompt', data.prompt ? data.prompt.split(/\s+/).length + ' words' : null],
+    ['Answer', data.answer ? '"' + data.answer + '"' : null],
+    ['Response', data.modelResponse ? (data.modelResponse.length > 40 ? data.modelResponse.slice(0, 40) + '…' : data.modelResponse) : null],
+    ['Steps', data.trajectorySteps.length > 0 ? data.trajectorySteps.length + ' trajectory steps' : null],
+    ['Sources', data.sources.length > 0 ? data.sources.length + ' URLs across ' + new Set(data.sources.map(u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } })).size + ' domains' : null],
+  ];
+  pf.forEach(([k, v]) => {
+    html += '<div class="parsed-key">' + k + '</div>';
+    html += '<div class="parsed-val' + (v ? '' : ' missing') + '">' + (v || 'not found') + '</div>';
+  });
+  html += '</div></div>';
+
+  sections.forEach(sec => {
+    const badge = secBadge(sec);
+    const badgeLabel = badge === 'p' ? 'PASS' : badge === 'w' ? 'WARN' : 'FAIL';
+    html += '<div class="section"><div class="sec-hdr">';
+    html += '<span class="sec-id">' + (secIds[sec.name] || '') + '</span>';
+    html += '<span class="sec-name">' + esc(sec.name) + '</span>';
+    html += '<span class="sec-badge ' + badge + '">' + badgeLabel + '</span>';
+    html += '</div><ul class="checks">';
+    sec.checks.forEach(c => {
+      const s = c.status[0];
+      html += '<li class="chk"><span class="chk-icon ' + s + '">' + ic[c.status] + '</span>';
+      html += '<div class="chk-body"><div class="chk-row">';
+      html += '<span class="chk-id">' + c.id + '</span>';
+      html += '<span class="chk-text">' + esc(c.text) + '</span>';
+      html += '</div>';
+      if (c.detail) {
+        const dc = c.status === 'warn' ? ' wn' : c.status === 'fail' ? ' fl' : '';
+        html += '<div class="chk-detail' + dc + '">' + esc(c.detail) + '</div>';
+      }
+      html += '</div></li>';
+    });
+    html += '</ul></div>';
+  });
+
+  html += '<div class="footer"><span>Project Seal QC Checklist v10 · By P Manikanta · <a href="https://github.com/PSPMANI" target="_blank">@PSPMANI</a></span><span>Client-side only — no data sent</span></div>';
+
+  el.innerHTML = html;
+  el.classList.add('show');
+  document.getElementById('clear-btn').style.display = '';
+  document.getElementById('copy-btn').style.display = '';
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+document.getElementById('run-btn').addEventListener('click', () => {
+  const raw = document.getElementById('metadata-input').value.trim();
+  const errEl = document.getElementById('parse-error');
+  errEl.style.display = 'none';
+
+  if (!raw) {
+    errEl.textContent = 'Paste your metadata.md content first.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const data = parseMetadata(raw);
+  const found = [data.domain, data.prompt, data.answer, data.modelResponse,
+    data.trajectorySteps.length > 0, data.sources.length > 0].filter(Boolean).length;
+
+  if (found < 2) {
+    errEl.textContent = 'Could not parse the pasted content. Make sure you pasted the complete contents of your metadata.md file.';
+    errEl.style.display = 'block';
+    document.getElementById('results').classList.remove('show');
+    document.getElementById('results').style.display = 'none';
+    return;
+  }
+
+  const outcome = runChecks(data);
+  document.getElementById('results').style.display = '';
+  renderResults(data, outcome);
+});
+
+document.getElementById('clear-btn').addEventListener('click', () => {
+  document.getElementById('metadata-input').value = '';
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('clear-btn').style.display = 'none';
+  document.getElementById('copy-btn').style.display = 'none';
+  document.getElementById('parse-error').style.display = 'none';
+});
+
+document.getElementById('copy-btn').addEventListener('click', () => {
+  const el = document.getElementById('results');
+  const lines = [];
+  el.querySelectorAll('.verdict-text').forEach(v => lines.push('=== ' + v.textContent + ' ===\n'));
+  el.querySelectorAll('.section').forEach(sec => {
+    const name = sec.querySelector('.sec-name').textContent;
+    const badge = sec.querySelector('.sec-badge').textContent;
+    lines.push('\n' + name + ' [' + badge + ']');
+    sec.querySelectorAll('.chk').forEach(chk => {
+      const icon = chk.querySelector('.chk-icon').textContent;
+      const id = chk.querySelector('.chk-id').textContent;
+      const text = chk.querySelector('.chk-text').textContent;
+      const detail = chk.querySelector('.chk-detail');
+      lines.push('  ' + icon + ' ' + id + ' ' + text);
+      if (detail) lines.push('    ' + detail.textContent);
+    });
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied';
+    setTimeout(() => { btn.textContent = 'Copy Results'; }, 1500);
+  });
+});
+
+document.getElementById('metadata-input').addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    document.getElementById('run-btn').click();
+  }
+});
+</script>
+</body>
+</html>
