@@ -617,7 +617,7 @@ function parseMetadata(raw) {
 
   const trajSplit = text.split(/Write the Golden Trajectory:/i);
   if (trajSplit.length > 1) {
-    const beforeSrc = trajSplit[1].split(/List the Verification Sources:/i)[0];
+    const beforeSrc = trajSplit[trajSplit.length - 1].split(/List the Verification Sources:/i)[0];
     const instrEnd = beforeSrc.search(/Step\s+1:/i);
     const stepsText = instrEnd >= 0 ? beforeSrc.slice(instrEnd) : beforeSrc;
     const stepPattern = /Step\s+(\d+):\s*(\w+):\s*([\s\S]*?)(?=\nStep\s+\d+:|$)/g;
