@@ -307,10 +307,6 @@ textarea.form-input{min-height:100px;resize:vertical;font-family:var(--sans)}
 
     <div class="comment-form" id="comment-form">
       <div class="form-row">
-        <label class="form-label">Email <span class="req">*</span></label>
-        <input type="email" class="form-input" id="cf-email" placeholder="your@email.com" required>
-      </div>
-      <div class="form-row">
         <label class="form-label">Name <span class="req">*</span></label>
         <input type="text" class="form-input" id="cf-name" placeholder="Your name">
       </div>
@@ -322,7 +318,7 @@ textarea.form-input{min-height:100px;resize:vertical;font-family:var(--sans)}
         <label class="form-label">Attach Images</label>
         <div class="img-upload">
           <div class="img-upload-area" id="img-drop-area">
-            Click or drag images here (JPG, PNG, GIF — max 2 MB each)
+            Click or drag images here (JPG, PNG, GIF — max 500 KB each, 2 images)
             <input type="file" id="cf-images" multiple accept="image/jpeg,image/png,image/gif,image/webp">
           </div>
           <div class="img-preview" id="img-preview"></div>
@@ -842,31 +838,38 @@ document.getElementById('metadata-input').addEventListener('keydown', e => {
 });
 
 // ═════════════════════════════════
-// COMMENTS
+// COMMENTS — Firebase Realtime DB
 // ═════════════════════════════════
-const STORAGE_KEY = 'qc-checker-comments';
+const FIREBASE_DB_URL = 'https://project-seal-qc-default-rtdb.firebaseio.com';
 let pendingImages = [];
 
-function loadComments() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-  catch { return []; }
-}
-
-function saveComments(comments) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(comments)); }
-  catch (e) {
-    if (e.name === 'QuotaExceededError') {
-      alert('Storage full. Try removing image attachments from older comments or clearing browser data.');
-    }
+async function loadComments() {
+  try {
+    const res = await fetch(FIREBASE_DB_URL + '/comments.json');
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!data) return [];
+    return Object.values(data).sort((a, b) => b.timestamp - a.timestamp);
+  } catch {
+    return [];
   }
 }
 
-function getInitials(name, email) {
+async function saveComment(comment) {
+  const res = await fetch(FIREBASE_DB_URL + '/comments.json', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(comment)
+  });
+  if (!res.ok) throw new Error('Failed to save comment');
+}
+
+function getInitials(name) {
   if (name && name.trim()) {
     const parts = name.trim().split(/\s+/);
     return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0].slice(0, 2).toUpperCase();
   }
-  return email ? email[0].toUpperCase() : '?';
+  return '?';
 }
 
 function avatarColor(str) {
@@ -891,8 +894,8 @@ function escHtml(s) {
   return d.innerHTML;
 }
 
-function renderComments() {
-  const comments = loadComments();
+async function renderComments() {
+  const comments = await loadComments();
   const list = document.getElementById('comment-list');
   const noComments = document.getElementById('no-comments');
   const countEl = document.getElementById('comment-count');
@@ -910,13 +913,12 @@ function renderComments() {
   let html = '';
 
   comments.forEach(c => {
-    const hue = avatarColor(c.email || c.name || '');
-    const initials = getInitials(c.name, c.email);
+    const hue = avatarColor(c.name || '');
+    const initials = getInitials(c.name);
     html += '<div class="comment-card">';
     html += '<div class="comment-meta">';
     html += '<div class="comment-avatar" style="background:hsl(' + hue + ',55%,45%)">' + initials + '</div>';
     html += '<div class="comment-author">' + escHtml(c.name || 'Anonymous') + '</div>';
-    html += '<span class="comment-email-tag">' + escHtml(c.email) + '</span>';
     html += '<span class="comment-date">' + formatDate(c.timestamp) + '</span>';
     html += '</div>';
     html += '<div class="comment-body">' + escHtml(c.message) + '</div>';
@@ -944,12 +946,12 @@ const dropArea = document.getElementById('img-drop-area');
 function addImageFiles(files) {
   Array.from(files).forEach(file => {
     if (!file.type.startsWith('image/')) return;
-    if (file.size > 2 * 1024 * 1024) {
-      alert(file.name + ' exceeds 2 MB limit.');
+    if (file.size > 500 * 1024) {
+      alert(file.name + ' exceeds 500 KB limit.');
       return;
     }
-    if (pendingImages.length >= 4) {
-      alert('Maximum 4 images per comment.');
+    if (pendingImages.length >= 2) {
+      alert('Maximum 2 images per comment.');
       return;
     }
     const reader = new FileReader();
@@ -992,19 +994,13 @@ dropArea.addEventListener('drop', e => {
 });
 
 // Submit comment
-document.getElementById('cf-submit').addEventListener('click', () => {
-  const email = document.getElementById('cf-email').value.trim();
+document.getElementById('cf-submit').addEventListener('click', async () => {
   const name = document.getElementById('cf-name').value.trim();
   const message = document.getElementById('cf-message').value.trim();
   const errEl = document.getElementById('cf-error');
+  const submitBtn = document.getElementById('cf-submit');
   errEl.style.display = 'none';
 
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errEl.textContent = 'Please enter a valid email address.';
-    errEl.style.display = 'block';
-    document.getElementById('cf-email').focus();
-    return;
-  }
   if (!name) {
     errEl.textContent = 'Please enter your name.';
     errEl.style.display = 'block';
@@ -1018,25 +1014,33 @@ document.getElementById('cf-submit').addEventListener('click', () => {
     return;
   }
 
-  const comments = loadComments();
-  comments.unshift({
-    email, name, message,
-    images: pendingImages.slice(),
-    timestamp: Date.now()
-  });
-  saveComments(comments);
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending...';
 
-  document.getElementById('cf-email').value = '';
-  document.getElementById('cf-name').value = '';
-  document.getElementById('cf-message').value = '';
-  pendingImages = [];
-  renderImagePreviews();
-  renderComments();
+  try {
+    await saveComment({
+      name, message,
+      images: pendingImages.slice(),
+      timestamp: Date.now()
+    });
 
-  const card = document.querySelector('.comment-card');
-  if (card) {
-    card.style.animation = 'fadeUp .35s ease-out';
-    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById('cf-name').value = '';
+    document.getElementById('cf-message').value = '';
+    pendingImages = [];
+    renderImagePreviews();
+    await renderComments();
+
+    const card = document.querySelector('.comment-card');
+    if (card) {
+      card.style.animation = 'fadeUp .35s ease-out';
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  } catch (e) {
+    errEl.textContent = 'Failed to send comment. Please try again.';
+    errEl.style.display = 'block';
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Feedback';
   }
 });
 
