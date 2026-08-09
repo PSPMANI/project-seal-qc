@@ -380,7 +380,7 @@ textarea.form-input{min-height:100px;resize:vertical;font-family:var(--sans)}
   <header class="hdr">
     <div class="hdr-eyebrow">Project Seal</div>
     <h1 class="hdr-title">QC Checker</h1>
-    <p class="hdr-sub">Copy and paste your entire task below. Automated checks run instantly in your browser — nothing is uploaded.</p>
+    <p class="hdr-sub">Copy and paste your entire task below. Automated checks run instantly — your task and its QC result are saved to the project for review.</p>
     <div style="font-size:.72rem;margin-top:.7rem;opacity:.7">By P Manikanta · <a href="https://github.com/PSPMANI" target="_blank" rel="noopener" style="color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.4)">@PSPMANI</a></div>
   </header>
 
@@ -863,7 +863,7 @@ function renderResults(data, outcome) {
     html += '</ul></div>';
   });
 
-  html += '<div class="footer"><span>Project Seal QC Checklist v10 · By P Manikanta · <a href="https://github.com/PSPMANI" target="_blank">@PSPMANI</a></span><span>Client-side only — no data sent</span></div>';
+  html += '<div class="footer"><span>Project Seal QC Checklist v10 · By P Manikanta · <a href="https://github.com/PSPMANI" target="_blank">@PSPMANI</a></span><span>Task &amp; QC result saved to project</span></div>';
 
   el.innerHTML = html;
   el.classList.add('show');
@@ -904,6 +904,7 @@ document.getElementById('run-btn').addEventListener('click', () => {
   const outcome = runChecks(data);
   document.getElementById('results').style.display = '';
   renderResults(data, outcome);
+  saveSubmission(raw, data, outcome);
 });
 
 document.getElementById('clear-btn').addEventListener('click', () => {
@@ -975,6 +976,31 @@ async function saveComment(comment) {
     body: JSON.stringify(comment)
   });
   if (!res.ok) throw new Error('Failed to save comment');
+}
+
+// Stores each QC run (the pasted task + the checklist result) under /submissions.
+// Fire-and-forget: a save failure must never break the on-screen QC display.
+async function saveSubmission(raw, data, outcome) {
+  try {
+    await fetch(FIREBASE_DB_URL + '/submissions.json', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        timestamp: Date.now(),
+        verdict: outcome.verdict,
+        stats: outcome.stats,
+        domain: data.domain || null,
+        answer: data.answer || null,
+        promptWordCount: data.prompt ? data.prompt.split(/\s+/).filter(Boolean).length : 0,
+        sourceCount: data.sources ? data.sources.length : 0,
+        sources: data.sources || [],
+        task: raw,
+        results: outcome.results
+      })
+    });
+  } catch (e) {
+    /* non-blocking */
+  }
 }
 
 function getInitials(name) {
