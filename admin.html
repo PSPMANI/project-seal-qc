@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>QC Submissions — Admin</title>
+<style>
+:root{
+  --bg:#F4F6FB;--surface:#FFFFFF;--surface-alt:#EDF0F7;--border:#DCE1EC;--border-strong:#C0C8D9;
+  --text-1:#141927;--text-2:#4B5468;--text-3:#8490A5;
+  --accent:#4F6DF5;--accent-hover:#3D5BE0;--accent-soft:rgba(79,109,245,.08);
+  --pass:#0FAA4F;--pass-bg:#ECFBF1;--pass-border:#9EDDAF;
+  --fail:#E63946;--fail-bg:#FEF0F1;--fail-border:#F3B1B6;
+  --warn:#D78B08;--warn-bg:#FEF9EE;--warn-border:#ECCE7A;
+  --blocked:#7C4DFF;--blocked-bg:#F2EEFF;--blocked-border:#C9B6FF;
+  --shadow-sm:0 1px 3px rgba(20,25,39,.06),0 1px 2px rgba(20,25,39,.04);
+  --shadow-md:0 4px 16px rgba(20,25,39,.07),0 1px 4px rgba(20,25,39,.04);
+  --mono:'Cascadia Code','JetBrains Mono','Consolas','SF Mono',monospace;
+  --sans:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+  --r:12px;--r-sm:8px;--r-lg:16px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#0E1117;--surface:#161B26;--surface-alt:#1C2233;--border:#252D3F;--border-strong:#344056;
+  --text-1:#E8EBF2;--text-2:#8B95AD;--text-3:#5A6580;
+  --accent:#6C8AFF;--accent-hover:#8BA3FF;--accent-soft:rgba(108,138,255,.1);
+  --pass:#4ADE80;--pass-bg:#0C1F15;--pass-border:#1A4D2E;
+  --fail:#FF6B75;--fail-bg:#251418;--fail-border:#5C2028;
+  --warn:#FBBF24;--warn-bg:#1F1A0C;--warn-border:#5A4618;
+  --blocked:#A78BFA;--blocked-bg:#1A1530;--blocked-border:#3A2E5C;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 16px rgba(0,0,0,.3);
+}}
+:root[data-theme="dark"]{
+  --bg:#0E1117;--surface:#161B26;--surface-alt:#1C2233;--border:#252D3F;--border-strong:#344056;
+  --text-1:#E8EBF2;--text-2:#8B95AD;--text-3:#5A6580;--accent:#6C8AFF;--accent-hover:#8BA3FF;--accent-soft:rgba(108,138,255,.1);
+  --pass:#4ADE80;--pass-bg:#0C1F15;--pass-border:#1A4D2E;--fail:#FF6B75;--fail-bg:#251418;--fail-border:#5C2028;
+  --warn:#FBBF24;--warn-bg:#1F1A0C;--warn-border:#5A4618;--blocked:#A78BFA;--blocked-bg:#1A1530;--blocked-border:#3A2E5C;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 16px rgba(0,0,0,.3);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text-1);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+.page{max-width:940px;margin:0 auto;padding:2rem 1.5rem 4rem}
+
+.hdr{margin-bottom:1.5rem;padding:1.6rem 1.9rem;background:linear-gradient(135deg,var(--accent) 0%,#7C4DFF 100%);border-radius:var(--r-lg);color:#fff;box-shadow:var(--shadow-md)}
+.hdr-eyebrow{font-family:var(--mono);font-size:.63rem;letter-spacing:.2em;text-transform:uppercase;opacity:.75;margin-bottom:.4rem}
+.hdr-title{font-size:1.7rem;font-weight:800;letter-spacing:-.01em}
+.hdr-sub{font-size:.85rem;opacity:.85;margin-top:.3rem}
+
+/* Login */
+.login{max-width:400px;margin:3rem auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:2rem;box-shadow:var(--shadow-md)}
+.login h2{font-size:1.15rem;margin-bottom:.3rem}
+.login p{font-size:.82rem;color:var(--text-2);margin-bottom:1.4rem}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-bottom:.4rem}
+.field input{width:100%;padding:.65rem .85rem;font-family:var(--sans);font-size:.9rem;background:var(--bg);color:var(--text-1);border:2px solid var(--border);border-radius:var(--r-sm);outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.btn{font-family:var(--sans);font-size:.85rem;padding:.65rem 1.5rem;border:none;border-radius:var(--r-sm);cursor:pointer;font-weight:600;transition:all .2s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff;width:100%;box-shadow:0 2px 8px rgba(79,109,245,.3)}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-primary:disabled{opacity:.5;cursor:default}
+.btn-ghost{background:var(--surface);color:var(--text-2);border:1.5px solid var(--border)}
+.btn-ghost:hover{background:var(--surface-alt);border-color:var(--border-strong)}
+.login-err{color:var(--fail);font-size:.82rem;margin-top:.8rem;display:none}
+.config-warn{background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:var(--r-sm);padding:.8rem 1rem;font-size:.78rem;color:var(--warn);margin-bottom:1.2rem;line-height:1.55}
+.config-warn code{font-family:var(--mono);font-size:.72rem}
+
+/* Toolbar */
+.toolbar{display:none;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:1.3rem}
+.toolbar.show{display:flex}
+.search{flex:1;min-width:180px;padding:.55rem .85rem;font-family:var(--sans);font-size:.85rem;background:var(--surface);color:var(--text-1);border:2px solid var(--border);border-radius:var(--r-sm);outline:none}
+.search:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.filter{padding:.55rem .8rem;font-family:var(--sans);font-size:.82rem;background:var(--surface);color:var(--text-1);border:2px solid var(--border);border-radius:var(--r-sm);outline:none;cursor:pointer}
+.who{font-family:var(--mono);font-size:.68rem;color:var(--text-3)}
+
+.summary{display:none;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:1.3rem}
+.summary.show{display:grid}
+.scard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.85rem 1rem;text-align:center;box-shadow:var(--shadow-sm)}
+.scard-n{font-family:var(--mono);font-size:1.4rem;font-weight:800;font-variant-numeric:tabular-nums}
+.scard-n.p{color:var(--pass)}.scard-n.f{color:var(--fail)}.scard-n.b{color:var(--blocked)}
+.scard-l{font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin-top:.15rem;font-weight:600}
+
+/* Submissions */
+.list{display:flex;flex-direction:column;gap:.7rem}
+.sub{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-sm);overflow:hidden}
+.sub-head{display:grid;grid-template-columns:auto 1fr auto;gap:.9rem;align-items:center;padding:.95rem 1.2rem;cursor:pointer}
+.pill{font-family:var(--mono);font-size:.6rem;letter-spacing:.05em;text-transform:uppercase;font-weight:700;padding:.28em .7em;border-radius:20px;white-space:nowrap}
+.pill.pass{background:var(--pass-bg);color:var(--pass);border:1px solid var(--pass-border)}
+.pill.fail{background:var(--fail-bg);color:var(--fail);border:1px solid var(--fail-border)}
+.pill.blocked{background:var(--blocked-bg);color:var(--blocked);border:1px solid var(--blocked-border)}
+.sub-meta{min-width:0}
+.sub-domain{font-weight:700;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub-sub{font-size:.75rem;color:var(--text-3);margin-top:.15rem;display:flex;gap:.8rem;flex-wrap:wrap}
+.sub-sub b{color:var(--text-2);font-weight:600}
+.sub-date{font-family:var(--mono);font-size:.66rem;color:var(--text-3);white-space:nowrap;text-align:right}
+.sub-body{display:none;padding:0 1.2rem 1.2rem;border-top:1px solid var(--border)}
+.sub.open .sub-body{display:block}
+.block-label{font-family:var(--mono);font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin:1.1rem 0 .5rem}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:.25rem 1rem;font-size:.83rem}
+.kv .k{font-family:var(--mono);font-size:.7rem;color:var(--text-3)}
+pre.task{font-family:var(--mono);font-size:.72rem;line-height:1.6;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:.9rem 1rem;max-height:340px;overflow:auto;white-space:pre-wrap;word-break:break-word}
+.results{display:flex;flex-direction:column;gap:.2rem;margin-top:.3rem}
+.rrow{display:grid;grid-template-columns:auto auto 1fr;gap:.5rem;align-items:baseline;font-size:.78rem;padding:.2rem 0;border-bottom:1px solid color-mix(in srgb,var(--border) 40%,transparent)}
+.rdot{width:.7rem;height:.7rem;border-radius:50%;flex-shrink:0;align-self:center}
+.rdot.pass{background:var(--pass)}.rdot.warn{background:var(--warn)}.rdot.fail{background:var(--fail)}
+.rid{font-family:var(--mono);font-size:.66rem;color:var(--text-3);min-width:2.4rem}
+.rtext{color:var(--text-1)}
+.rdetail{grid-column:3;font-size:.72rem;color:var(--text-2);font-style:italic}
+.copy-btn{font-family:var(--mono);font-size:.66rem;color:var(--accent);background:none;border:1px solid var(--border);border-radius:6px;padding:.3rem .6rem;cursor:pointer;margin-top:.7rem}
+.copy-btn:hover{background:var(--accent-soft);border-color:var(--accent)}
+.empty{text-align:center;padding:3rem 1rem;color:var(--text-3);font-size:.9rem;font-style:italic}
+.srcs a{color:var(--accent);font-size:.76rem;word-break:break-all;display:block;margin-top:.15rem}
+.footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.7rem;color:var(--text-3);font-family:var(--mono)}
+@media(max-width:600px){.summary{grid-template-columns:repeat(2,1fr)}.sub-head{grid-template-columns:auto 1fr;gap:.6rem}.sub-date{grid-column:2;text-align:left;margin-top:.2rem}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="hdr">
+    <div class="hdr-eyebrow">Project Seal · Admin</div>
+    <div class="hdr-title">QC Submissions</div>
+    <div class="hdr-sub">Private review of every QC run. Sign in with your Firebase admin account.</div>
+  </header>
+
+  <!-- Login -->
+  <div class="login" id="login">
+    <h2>Admin sign in</h2>
+    <p>Use the email &amp; password you created in Firebase Authentication.</p>
+    <div class="config-warn" id="config-warn" style="display:none">
+      Set your <code>FIREBASE_API_KEY</code> near the top of the script before this page can sign in.
+      Find it in Firebase Console → Project settings → General → Web API Key.
+    </div>
+    <div class="field"><label>Email</label><input type="email" id="email" autocomplete="username" placeholder="you@example.com"></div>
+    <div class="field"><label>Password</label><input type="password" id="password" autocomplete="current-password" placeholder="••••••••"></div>
+    <button class="btn btn-primary" id="login-btn">Sign in</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="summary" id="summary">
+    <div class="scard"><div class="scard-n" id="s-total">0</div><div class="scard-l">Total</div></div>
+    <div class="scard"><div class="scard-n p" id="s-pass">0</div><div class="scard-l">Pass</div></div>
+    <div class="scard"><div class="scard-n f" id="s-fail">0</div><div class="scard-l">Fail</div></div>
+    <div class="scard"><div class="scard-n b" id="s-blocked">0</div><div class="scard-l">Blocked</div></div>
+  </div>
+
+  <div class="toolbar" id="toolbar">
+    <input class="search" id="search" placeholder="Search domain, answer, or task text…">
+    <select class="filter" id="filter">
+      <option value="">All verdicts</option>
+      <option value="PASS">Pass</option>
+      <option value="FAIL">Fail</option>
+      <option value="BLOCKED">Blocked</option>
+    </select>
+    <button class="btn btn-ghost" id="refresh-btn">Refresh</button>
+    <button class="btn btn-ghost" id="logout-btn">Sign out</button>
+    <span class="who" id="who"></span>
+  </div>
+
+  <div class="list" id="list"></div>
+
+  <div class="footer">Project Seal QC · Admin view · reads /submissions with your authenticated session</div>
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────
+// Paste your Firebase Web API Key (Console → Project settings → General → Web API Key).
+// The API key is safe to expose; access is protected by the login + database rules.
+const FIREBASE_API_KEY = 'PASTE_YOUR_WEB_API_KEY';
+const FIREBASE_DB_URL  = 'https://project-seal-qc-default-rtdb.firebaseio.com';
+// ──────────────────────────────────────────────────────────
+
+let idToken = null;
+let allSubs = [];
+
+const $ = id => document.getElementById(id);
+
+if (!FIREBASE_API_KEY || FIREBASE_API_KEY === 'PASTE_YOUR_WEB_API_KEY') {
+  $('config-warn').style.display = 'block';
+}
+
+// Restore a session token for this tab if present
+try {
+  const saved = sessionStorage.getItem('qc_admin_token');
+  const savedEmail = sessionStorage.getItem('qc_admin_email');
+  if (saved) { idToken = saved; onSignedIn(savedEmail || ''); }
+} catch (e) {}
+
+$('login-btn').addEventListener('click', signIn);
+$('password').addEventListener('keydown', e => { if (e.key === 'Enter') signIn(); });
+
+async function signIn() {
+  const email = $('email').value.trim();
+  const password = $('password').value;
+  const err = $('login-err');
+  err.style.display = 'none';
+  if (!email || !password) { err.textContent = 'Enter your email and password.'; err.style.display = 'block'; return; }
+  if (!FIREBASE_API_KEY || FIREBASE_API_KEY === 'PASTE_YOUR_WEB_API_KEY') {
+    err.textContent = 'Firebase API key is not set in this file yet.'; err.style.display = 'block'; return;
+  }
+  const btn = $('login-btn');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    const res = await fetch(
+      'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + FIREBASE_API_KEY,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, returnSecureToken: true }) }
+    );
+    const data = await res.json();
+    if (!res.ok) throw new Error((data.error && data.error.message) || 'Sign-in failed');
+    idToken = data.idToken;
+    try { sessionStorage.setItem('qc_admin_token', idToken); sessionStorage.setItem('qc_admin_email', email); } catch (e) {}
+    onSignedIn(email);
+  } catch (e) {
+    const msg = { EMAIL_NOT_FOUND: 'No account with that email.', INVALID_PASSWORD: 'Wrong password.',
+      INVALID_EMAIL: 'Invalid email.', INVALID_LOGIN_CREDENTIALS: 'Wrong email or password.',
+      USER_DISABLED: 'This account is disabled.' }[e.message] || ('Sign-in failed: ' + e.message);
+    err.textContent = msg; err.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sign in';
+  }
+}
+
+function onSignedIn(email) {
+  $('login').style.display = 'none';
+  $('toolbar').classList.add('show');
+  $('summary').classList.add('show');
+  if (email) $('who').textContent = email;
+  loadSubmissions();
+}
+
+function signOut() {
+  idToken = null; allSubs = [];
+  try { sessionStorage.removeItem('qc_admin_token'); sessionStorage.removeItem('qc_admin_email'); } catch (e) {}
+  $('login').style.display = '';
+  $('toolbar').classList.remove('show');
+  $('summary').classList.remove('show');
+  $('list').innerHTML = '';
+  $('password').value = '';
+}
+$('logout-btn').addEventListener('click', signOut);
+$('refresh-btn').addEventListener('click', loadSubmissions);
+$('search').addEventListener('input', render);
+$('filter').addEventListener('change', render);
+
+async function loadSubmissions() {
+  $('list').innerHTML = '<div class="empty">Loading…</div>';
+  try {
+    const res = await fetch(FIREBASE_DB_URL + '/submissions.json?auth=' + encodeURIComponent(idToken) + '&orderBy="timestamp"');
+    if (res.status === 401 || res.status === 403) {
+      $('list').innerHTML = '<div class="empty">Access denied. Your login may lack read permission — check the database rules for /submissions.</div>';
+      return;
+    }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    allSubs = data ? Object.entries(data).map(([id, v]) => ({ id, ...v })).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)) : [];
+    updateSummary();
+    render();
+  } catch (e) {
+    $('list').innerHTML = '<div class="empty">Could not load submissions (' + escH(e.message) + ').</div>';
+  }
+}
+
+function updateSummary() {
+  $('s-total').textContent = allSubs.length;
+  $('s-pass').textContent = allSubs.filter(s => s.verdict === 'PASS').length;
+  $('s-fail').textContent = allSubs.filter(s => s.verdict === 'FAIL').length;
+  $('s-blocked').textContent = allSubs.filter(s => s.verdict === 'BLOCKED').length;
+}
+
+function fmtDate(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  const M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const h = d.getHours(), m = d.getMinutes(), ap = h >= 12 ? 'PM' : 'AM', h12 = h % 12 || 12;
+  return M[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + ' · ' + h12 + ':' + String(m).padStart(2, '0') + ' ' + ap;
+}
+
+function escH(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
+
+function render() {
+  const q = $('search').value.trim().toLowerCase();
+  const vf = $('filter').value;
+  const list = $('list');
+  let subs = allSubs;
+  if (vf) subs = subs.filter(s => s.verdict === vf);
+  if (q) subs = subs.filter(s =>
+    (s.domain || '').toLowerCase().includes(q) ||
+    (s.answer || '').toLowerCase().includes(q) ||
+    (s.task || '').toLowerCase().includes(q));
+
+  if (!subs.length) { list.innerHTML = '<div class="empty">No submissions' + (allSubs.length ? ' match your filter.' : ' yet.') + '</div>'; return; }
+
+  list.innerHTML = subs.map(s => {
+    const v = (s.verdict || '').toLowerCase();
+    const st = s.stats || {};
+    const results = Array.isArray(s.results) ? s.results : [];
+    const resHtml = results.map(r =>
+      '<div class="rrow"><span class="rdot ' + escH(r.status) + '"></span>' +
+      '<span class="rid">' + escH(r.id) + '</span>' +
+      '<span class="rtext">' + escH(r.text) + '</span>' +
+      (r.detail ? '<span class="rdetail">' + escH(r.detail) + '</span>' : '') + '</div>'
+    ).join('');
+    const srcs = Array.isArray(s.sources) && s.sources.length
+      ? '<div class="block-label">Sources (' + s.sources.length + ')</div><div class="srcs">' +
+        s.sources.map(u => '<a href="' + escH(u) + '" target="_blank" rel="noopener">' + escH(u) + '</a>').join('') + '</div>'
+      : '';
+    return '' +
+    '<div class="sub">' +
+      '<div class="sub-head">' +
+        '<span class="pill ' + v + '">' + escH(s.verdict || '—') + '</span>' +
+        '<div class="sub-meta">' +
+          '<div class="sub-domain">' + escH(s.domain || 'No domain') + '</div>' +
+          '<div class="sub-sub">' +
+            (s.answer ? '<span>Answer: <b>' + escH(s.answer) + '</b></span>' : '') +
+            '<span><b>' + (st.pass || 0) + '</b> pass</span>' +
+            '<span><b>' + (st.warn || 0) + '</b> warn</span>' +
+            '<span><b>' + (st.fail || 0) + '</b> fail</span>' +
+            (s.promptWordCount ? '<span><b>' + s.promptWordCount + '</b> words</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="sub-date">' + fmtDate(s.timestamp) + '</div>' +
+      '</div>' +
+      '<div class="sub-body">' +
+        (resHtml ? '<div class="block-label">Checklist (' + results.length + ')</div><div class="results">' + resHtml + '</div>' : '') +
+        srcs +
+        '<div class="block-label">Full task</div>' +
+        '<pre class="task">' + escH(s.task || '(empty)') + '</pre>' +
+        '<button class="copy-btn" data-id="' + escH(s.id) + '">Copy task text</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  list.querySelectorAll('.sub-head').forEach(h => h.addEventListener('click', () => h.parentElement.classList.toggle('open')));
+  list.querySelectorAll('.copy-btn').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    const sub = allSubs.find(x => x.id === b.dataset.id);
+    if (sub) navigator.clipboard.writeText(sub.task || '').then(() => { b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy task text', 1400); });
+  }));
+}
+</script>
+</body>
+</html>
