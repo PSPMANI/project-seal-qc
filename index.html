@@ -107,44 +107,70 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 
 /* ─── Header ─── */
 .hdr{
-  margin-bottom:2rem;padding:2rem 2.2rem;
-  background:linear-gradient(135deg,var(--accent) 0%,#7C4DFF 100%);
+  margin-bottom:2rem;padding:2.4rem 2.3rem;
+  background:linear-gradient(135deg,#4F6DF5 0%,#6A4DF0 46%,#9B4DFF 100%);
   border-radius:var(--r-lg);color:#fff;position:relative;overflow:hidden;
-  box-shadow:var(--shadow-lg);
+  box-shadow:0 24px 60px -18px rgba(90,60,220,.6),var(--shadow-lg);
+  display:grid;grid-template-columns:1fr auto;gap:1.4rem;align-items:center;
 }
 .hdr::before{
-  content:'';position:absolute;top:-40%;right:-10%;width:320px;height:320px;
-  background:radial-gradient(circle,rgba(255,255,255,.12) 0%,transparent 70%);
-  border-radius:50%;pointer-events:none;
+  content:'';position:absolute;inset:-45%;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(closest-side at 22% 22%, rgba(255,255,255,.20), transparent 68%),
+    radial-gradient(closest-side at 84% 26%, rgba(45,212,255,.40), transparent 66%),
+    radial-gradient(closest-side at 62% 92%, rgba(255,120,220,.34), transparent 66%);
+  animation:hdrFloat 18s ease-in-out infinite;
 }
 .hdr::after{
-  content:'';position:absolute;bottom:-30%;left:-5%;width:240px;height:240px;
-  background:radial-gradient(circle,rgba(255,255,255,.08) 0%,transparent 70%);
-  border-radius:50%;pointer-events:none;
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.55;
+  background-image:linear-gradient(rgba(255,255,255,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.09) 1px,transparent 1px);
+  background-size:34px 34px;
+  -webkit-mask-image:radial-gradient(circle at 72% 45%,#000,transparent 72%);
+  mask-image:radial-gradient(circle at 72% 45%,#000,transparent 72%);
 }
-.hdr-eyebrow{font-family:var(--mono);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;opacity:.7;margin-bottom:.5rem}
-.hdr-title{font-family:var(--sans);font-size:2rem;font-weight:800;letter-spacing:-.01em;line-height:1.15;margin-bottom:.5rem}
-.hdr-sub{font-size:.9rem;opacity:.85;max-width:50ch;line-height:1.6}
+@keyframes hdrFloat{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(-3%,3%) rotate(7deg)}}
+.hdr-content{position:relative;z-index:1;min-width:0}
+.hdr-eyebrow{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;opacity:.95;margin-bottom:.7rem;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);padding:.3rem .75rem;border-radius:999px}
+.hdr-title{font-family:var(--sans);font-size:2.5rem;font-weight:850;letter-spacing:-.025em;line-height:1.06;margin-bottom:.55rem;text-shadow:0 2px 24px rgba(0,0,0,.16)}
+.hdr-sub{font-size:.92rem;opacity:.94;max-width:46ch;line-height:1.6}
+.hdr-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+.chip-feat{display:inline-flex;align-items:center;gap:.45rem;font-size:.72rem;font-weight:600;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.26);padding:.42rem .8rem;border-radius:999px;backdrop-filter:blur(6px)}
+.chip-feat svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .hdr-tg{
-  display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;
-  font-family:var(--sans);font-size:.82rem;font-weight:700;color:#fff;text-decoration:none;
-  background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);
-  padding:.55rem 1.1rem;border-radius:999px;backdrop-filter:blur(4px);
-  transition:background .2s,transform .15s;
+  display:inline-flex;align-items:center;gap:.5rem;margin-top:1.1rem;
+  font-family:var(--sans);font-size:.82rem;font-weight:700;color:#5b2ea6;text-decoration:none;
+  background:#fff;border:1px solid rgba(255,255,255,.6);
+  padding:.55rem 1.15rem;border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,.2);
+  transition:transform .15s,box-shadow .2s;
 }
-.hdr-tg:hover{background:rgba(255,255,255,.28);transform:translateY(-1px)}
-.hdr-tg svg{width:18px;height:18px;fill:currentColor;flex-shrink:0}
+.hdr-tg:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(0,0,0,.26)}
+.hdr-tg svg{width:18px;height:18px;fill:#229ED9;flex-shrink:0}
+.hdr-by{font-size:.7rem;margin-top:.95rem;opacity:.75}
+.hdr-by a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.45)}
+.hdr-badge{position:relative;z-index:1;width:136px;height:136px;flex-shrink:0;display:grid;place-items:center}
+.hdr-badge .ring{position:absolute;inset:0;border-radius:50%;border:1.5px dashed rgba(255,255,255,.4);animation:spin 24s linear infinite}
+.hdr-badge .ring2{position:absolute;inset:16px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2)}
+.hdr-badge .shield{position:relative;width:80px;height:80px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.28));animation:badgeFloat 5s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes badgeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media(prefers-reduced-motion:reduce){.hdr::before,.hdr-badge .ring,.hdr-badge .shield{animation:none}}
 
-/* ─── How-to ─── */
-.howto{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-  padding:1.2rem 1.5rem;margin-bottom:1.5rem;font-size:.85rem;color:var(--text-2);line-height:1.7;
-  box-shadow:var(--shadow-sm);
-}
-.howto-title{font-weight:700;color:var(--text-1);margin-bottom:.4rem;font-size:.95rem}
-.howto ol{margin-left:1.2rem;margin-top:.4rem}
-.howto li{margin-bottom:.3rem}
-.howto code{font-family:var(--mono);font-size:.72rem;background:var(--accent-soft);color:var(--accent);padding:.15em .45em;border-radius:4px;font-weight:500}
+/* ─── How-to steps ─── */
+.howto{margin-bottom:1.6rem}
+.howto-title{font-weight:800;color:var(--text-1);margin-bottom:.9rem;font-size:1rem;display:flex;align-items:center;gap:.5rem}
+.howto-title .dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
+.step3{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.15rem 1.2rem;box-shadow:var(--shadow-sm);transition:transform .15s,box-shadow .15s,border-color .15s;overflow:hidden}
+.step3:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--accent)}
+.step3::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),#9B4DFF)}
+.step3-ic{width:2.5rem;height:2.5rem;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin-bottom:.75rem}
+.step3-ic svg{width:1.35rem;height:1.35rem;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.step3-n{position:absolute;top:.85rem;right:1.1rem;font-family:var(--mono);font-size:1.4rem;font-weight:800;color:var(--border-strong);line-height:1}
+.step3-t{font-weight:700;font-size:.92rem;margin-bottom:.25rem}
+.step3-d{font-size:.8rem;color:var(--text-2);line-height:1.5}
+.step3-d code{font-family:var(--mono);font-size:.72rem;background:var(--accent-soft);color:var(--accent);padding:.12em .4em;border-radius:4px;font-weight:600}
+kbd{font-family:var(--mono);font-size:.7rem;background:var(--surface-alt);border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:.08em .4em;color:var(--text-1)}
+@media(max-width:600px){.steps3{grid-template-columns:1fr}}
 
 /* ─── Notice ─── */
 .qc-note{
@@ -389,8 +415,10 @@ textarea.form-input{min-height:100px;resize:vertical;font-family:var(--sans)}
 
 @media(max-width:600px){
   .page{padding:1rem .8rem 2.5rem}
-  .hdr{padding:1.5rem 1.3rem;border-radius:var(--r)}
-  .hdr-title{font-size:1.5rem}
+  .hdr{padding:1.6rem 1.4rem;border-radius:var(--r);grid-template-columns:1fr}
+  .hdr-title{font-size:1.85rem}
+  .hdr-badge{width:96px;height:96px;justify-self:start;margin-top:.4rem}
+  .hdr-badge .shield{width:58px;height:58px}
   .stats{grid-template-columns:repeat(3,1fr);gap:.5rem}
   .stat{padding:.7rem .6rem}
   .stat-n{font-size:1.2rem}
@@ -405,23 +433,52 @@ textarea.form-input{min-height:100px;resize:vertical;font-family:var(--sans)}
 <body>
 <div class="page">
   <header class="hdr">
-    <div class="hdr-eyebrow">Project Seal</div>
-    <h1 class="hdr-title">QC Checker</h1>
-    <p class="hdr-sub">Copy and paste your entire task below. Automated checks run instantly — your task and its QC result are saved to the project for review.</p>
-    <div style="font-size:.72rem;margin-top:.7rem;opacity:.7">By P Manikanta · <a href="https://github.com/PSPMANI" target="_blank" rel="noopener" style="color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.4)">@PSPMANI</a></div>
-    <a class="hdr-tg" href="https://t.me/pspmaniprojects" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.56 8.16l-1.86 8.77c-.14.62-.5.77-1.02.48l-2.82-2.08-1.36 1.31c-.15.15-.28.28-.57.28l.2-2.87 5.23-4.72c.23-.2-.05-.31-.35-.11l-6.46 4.07-2.78-.87c-.6-.19-.62-.6.13-.89l10.86-4.19c.5-.18.94.12.78.9z"/></svg>
-      Join our Telegram
-    </a>
+    <div class="hdr-content">
+      <span class="hdr-eyebrow">◆ Project Seal · QC Suite</span>
+      <h1 class="hdr-title">QC Checker</h1>
+      <p class="hdr-sub">Paste your whole task and get an instant, colour-coded audit against every Project Seal rule — before you submit.</p>
+      <div class="hdr-chips">
+        <span class="chip-feat"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"></circle><path d="M12 13V8M9 2h6"></path></svg>Instant, in your browser</span>
+        <span class="chip-feat"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg>30+ automated checks</span>
+        <span class="chip-feat"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>Prompt · answer · sources · trajectory</span>
+      </div>
+      <a class="hdr-tg" href="https://t.me/pspmaniprojects" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.56 8.16l-1.86 8.77c-.14.62-.5.77-1.02.48l-2.82-2.08-1.36 1.31c-.15.15-.28.28-.57.28l.2-2.87 5.23-4.72c.23-.2-.05-.31-.35-.11l-6.46 4.07-2.78-.87c-.6-.19-.62-.6.13-.89l10.86-4.19c.5-.18.94.12.78.9z"/></svg>
+        Join our Telegram
+      </a>
+      <div class="hdr-by">By P Manikanta · <a href="https://github.com/PSPMANI" target="_blank" rel="noopener">@PSPMANI</a></div>
+    </div>
+    <div class="hdr-badge">
+      <span class="ring"></span><span class="ring2"></span>
+      <svg class="shield" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <path d="M32 3 55 12v18c0 15-10 26-23 31C19 56 9 45 9 30V12z" fill="rgba(255,255,255,.18)" stroke="#fff" stroke-width="2.5"/>
+        <path d="M21 32.5l7 7 15-16" stroke="#fff" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
   </header>
 
   <div class="howto">
-    <div class="howto-title">How to use</div>
-    <ol>
-      <li>Open your full task and select everything (<kbd>Ctrl+A</kbd>)</li>
-      <li>Copy it all (<kbd>Ctrl+C</kbd>)</li>
-      <li>Paste the whole task into the box below and click <strong>Run QC Audit</strong></li>
-    </ol>
+    <div class="howto-title"><span class="dot"></span>How it works — 3 steps</div>
+    <div class="steps3">
+      <div class="step3">
+        <span class="step3-n">1</span>
+        <div class="step3-ic"><svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"></path><path d="M14 3h7v7M21 3l-9 9"></path></svg></div>
+        <div class="step3-t">Open your task</div>
+        <div class="step3-d">Open your full task and select everything (<kbd>Ctrl</kbd>+<kbd>A</kbd>).</div>
+      </div>
+      <div class="step3">
+        <span class="step3-n">2</span>
+        <div class="step3-ic"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></div>
+        <div class="step3-t">Copy it all</div>
+        <div class="step3-d">Copy the whole thing (<kbd>Ctrl</kbd>+<kbd>C</kbd>) — prompt, answer, sources, trajectory.</div>
+      </div>
+      <div class="step3">
+        <span class="step3-n">3</span>
+        <div class="step3-ic"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></div>
+        <div class="step3-t">Paste &amp; audit</div>
+        <div class="step3-d">Paste it below and hit <strong>Run QC Audit</strong> for instant results.</div>
+      </div>
+    </div>
   </div>
 
   <div class="qc-note">
