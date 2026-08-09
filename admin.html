@@ -46,7 +46,6 @@ body{background:var(--bg);color:var(--text-1);font-family:var(--sans);font-size:
 .hdr-title{font-size:1.7rem;font-weight:800;letter-spacing:-.01em}
 .hdr-sub{font-size:.85rem;opacity:.85;margin-top:.3rem}
 
-/* Login */
 .login{max-width:400px;margin:3rem auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:2rem;box-shadow:var(--shadow-md)}
 .login h2{font-size:1.15rem;margin-bottom:.3rem}
 .login p{font-size:.82rem;color:var(--text-2);margin-bottom:1.4rem}
@@ -58,20 +57,15 @@ body{background:var(--bg);color:var(--text-1);font-family:var(--sans);font-size:
 .btn:active{transform:scale(.97)}
 .btn-primary{background:var(--accent);color:#fff;width:100%;box-shadow:0 2px 8px rgba(79,109,245,.3)}
 .btn-primary:hover{background:var(--accent-hover)}
-.btn-primary:disabled{opacity:.5;cursor:default}
 .btn-ghost{background:var(--surface);color:var(--text-2);border:1.5px solid var(--border)}
 .btn-ghost:hover{background:var(--surface-alt);border-color:var(--border-strong)}
 .login-err{color:var(--fail);font-size:.82rem;margin-top:.8rem;display:none}
-.config-warn{background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:var(--r-sm);padding:.8rem 1rem;font-size:.78rem;color:var(--warn);margin-bottom:1.2rem;line-height:1.55}
-.config-warn code{font-family:var(--mono);font-size:.72rem}
 
-/* Toolbar */
 .toolbar{display:none;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:1.3rem}
 .toolbar.show{display:flex}
 .search{flex:1;min-width:180px;padding:.55rem .85rem;font-family:var(--sans);font-size:.85rem;background:var(--surface);color:var(--text-1);border:2px solid var(--border);border-radius:var(--r-sm);outline:none}
 .search:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
 .filter{padding:.55rem .8rem;font-family:var(--sans);font-size:.82rem;background:var(--surface);color:var(--text-1);border:2px solid var(--border);border-radius:var(--r-sm);outline:none;cursor:pointer}
-.who{font-family:var(--mono);font-size:.68rem;color:var(--text-3)}
 
 .summary{display:none;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:1.3rem}
 .summary.show{display:grid}
@@ -80,7 +74,6 @@ body{background:var(--bg);color:var(--text-1);font-family:var(--sans);font-size:
 .scard-n.p{color:var(--pass)}.scard-n.f{color:var(--fail)}.scard-n.b{color:var(--blocked)}
 .scard-l{font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin-top:.15rem;font-weight:600}
 
-/* Submissions */
 .list{display:flex;flex-direction:column;gap:.7rem}
 .sub{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-sm);overflow:hidden}
 .sub-head{display:grid;grid-template-columns:auto 1fr auto;gap:.9rem;align-items:center;padding:.95rem 1.2rem;cursor:pointer}
@@ -96,8 +89,6 @@ body{background:var(--bg);color:var(--text-1);font-family:var(--sans);font-size:
 .sub-body{display:none;padding:0 1.2rem 1.2rem;border-top:1px solid var(--border)}
 .sub.open .sub-body{display:block}
 .block-label{font-family:var(--mono);font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin:1.1rem 0 .5rem}
-.kv{display:grid;grid-template-columns:auto 1fr;gap:.25rem 1rem;font-size:.83rem}
-.kv .k{font-family:var(--mono);font-size:.7rem;color:var(--text-3)}
 pre.task{font-family:var(--mono);font-size:.72rem;line-height:1.6;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:.9rem 1rem;max-height:340px;overflow:auto;white-space:pre-wrap;word-break:break-word}
 .results{display:flex;flex-direction:column;gap:.2rem;margin-top:.3rem}
 .rrow{display:grid;grid-template-columns:auto auto 1fr;gap:.5rem;align-items:baseline;font-size:.78rem;padding:.2rem 0;border-bottom:1px solid color-mix(in srgb,var(--border) 40%,transparent)}
@@ -119,24 +110,17 @@ pre.task{font-family:var(--mono);font-size:.72rem;line-height:1.6;background:var
   <header class="hdr">
     <div class="hdr-eyebrow">Project Seal · Admin</div>
     <div class="hdr-title">QC Submissions</div>
-    <div class="hdr-sub">Private review of every QC run. Sign in with your Firebase admin account.</div>
+    <div class="hdr-sub">Private review of every QC run. Enter the passcode to continue.</div>
   </header>
 
-  <!-- Login -->
   <div class="login" id="login">
-    <h2>Admin sign in</h2>
-    <p>Use the email &amp; password you created in Firebase Authentication.</p>
-    <div class="config-warn" id="config-warn" style="display:none">
-      Set your <code>FIREBASE_API_KEY</code> near the top of the script before this page can sign in.
-      Find it in Firebase Console → Project settings → General → Web API Key.
-    </div>
-    <div class="field"><label>Email</label><input type="email" id="email" autocomplete="username" placeholder="you@example.com"></div>
-    <div class="field"><label>Password</label><input type="password" id="password" autocomplete="current-password" placeholder="••••••••"></div>
-    <button class="btn btn-primary" id="login-btn">Sign in</button>
+    <h2>Enter passcode</h2>
+    <p>Only you should have this. It unlocks the submissions list.</p>
+    <div class="field"><label>Passcode</label><input type="password" id="passcode" autocomplete="off" placeholder="••••••••"></div>
+    <button class="btn btn-primary" id="unlock-btn">Unlock</button>
     <div class="login-err" id="login-err"></div>
   </div>
 
-  <!-- Dashboard -->
   <div class="summary" id="summary">
     <div class="scard"><div class="scard-n" id="s-total">0</div><div class="scard-l">Total</div></div>
     <div class="scard"><div class="scard-n p" id="s-pass">0</div><div class="scard-l">Pass</div></div>
@@ -153,92 +137,60 @@ pre.task{font-family:var(--mono);font-size:.72rem;line-height:1.6;background:var
       <option value="BLOCKED">Blocked</option>
     </select>
     <button class="btn btn-ghost" id="refresh-btn">Refresh</button>
-    <button class="btn btn-ghost" id="logout-btn">Sign out</button>
-    <span class="who" id="who"></span>
+    <button class="btn btn-ghost" id="lock-btn">Lock</button>
   </div>
 
   <div class="list" id="list"></div>
 
-  <div class="footer">Project Seal QC · Admin view · reads /submissions with your authenticated session</div>
+  <div class="footer">Project Seal QC · Admin view</div>
 </div>
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────
-// Paste your Firebase Web API Key (Console → Project settings → General → Web API Key).
-// The API key is safe to expose; access is protected by the login + database rules.
-const FIREBASE_API_KEY = 'PASTE_YOUR_WEB_API_KEY';
-const FIREBASE_DB_URL  = 'https://project-seal-qc-default-rtdb.firebaseio.com';
+// Change this passcode to something only you know.
+// Note: this is a light UI gate, not real security — the data is
+// readable by anyone who knows the database URL. Keep the URL private.
+const ADMIN_PASSCODE = 'seal-qc-2026';
+const FIREBASE_DB_URL = 'https://project-seal-qc-default-rtdb.firebaseio.com';
 // ──────────────────────────────────────────────────────────
 
-let idToken = null;
 let allSubs = [];
-
 const $ = id => document.getElementById(id);
 
-if (!FIREBASE_API_KEY || FIREBASE_API_KEY === 'PASTE_YOUR_WEB_API_KEY') {
-  $('config-warn').style.display = 'block';
-}
+try { if (sessionStorage.getItem('qc_admin_unlocked') === '1') unlock(); } catch (e) {}
 
-// Restore a session token for this tab if present
-try {
-  const saved = sessionStorage.getItem('qc_admin_token');
-  const savedEmail = sessionStorage.getItem('qc_admin_email');
-  if (saved) { idToken = saved; onSignedIn(savedEmail || ''); }
-} catch (e) {}
+$('unlock-btn').addEventListener('click', tryUnlock);
+$('passcode').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
 
-$('login-btn').addEventListener('click', signIn);
-$('password').addEventListener('keydown', e => { if (e.key === 'Enter') signIn(); });
-
-async function signIn() {
-  const email = $('email').value.trim();
-  const password = $('password').value;
+function tryUnlock() {
   const err = $('login-err');
   err.style.display = 'none';
-  if (!email || !password) { err.textContent = 'Enter your email and password.'; err.style.display = 'block'; return; }
-  if (!FIREBASE_API_KEY || FIREBASE_API_KEY === 'PASTE_YOUR_WEB_API_KEY') {
-    err.textContent = 'Firebase API key is not set in this file yet.'; err.style.display = 'block'; return;
-  }
-  const btn = $('login-btn');
-  btn.disabled = true; btn.textContent = 'Signing in…';
-  try {
-    const res = await fetch(
-      'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + FIREBASE_API_KEY,
-      { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, returnSecureToken: true }) }
-    );
-    const data = await res.json();
-    if (!res.ok) throw new Error((data.error && data.error.message) || 'Sign-in failed');
-    idToken = data.idToken;
-    try { sessionStorage.setItem('qc_admin_token', idToken); sessionStorage.setItem('qc_admin_email', email); } catch (e) {}
-    onSignedIn(email);
-  } catch (e) {
-    const msg = { EMAIL_NOT_FOUND: 'No account with that email.', INVALID_PASSWORD: 'Wrong password.',
-      INVALID_EMAIL: 'Invalid email.', INVALID_LOGIN_CREDENTIALS: 'Wrong email or password.',
-      USER_DISABLED: 'This account is disabled.' }[e.message] || ('Sign-in failed: ' + e.message);
-    err.textContent = msg; err.style.display = 'block';
-  } finally {
-    btn.disabled = false; btn.textContent = 'Sign in';
+  if ($('passcode').value === ADMIN_PASSCODE) {
+    try { sessionStorage.setItem('qc_admin_unlocked', '1'); } catch (e) {}
+    unlock();
+  } else {
+    err.textContent = 'Wrong passcode.';
+    err.style.display = 'block';
   }
 }
 
-function onSignedIn(email) {
+function unlock() {
   $('login').style.display = 'none';
   $('toolbar').classList.add('show');
   $('summary').classList.add('show');
-  if (email) $('who').textContent = email;
   loadSubmissions();
 }
 
-function signOut() {
-  idToken = null; allSubs = [];
-  try { sessionStorage.removeItem('qc_admin_token'); sessionStorage.removeItem('qc_admin_email'); } catch (e) {}
+function lock() {
+  allSubs = [];
+  try { sessionStorage.removeItem('qc_admin_unlocked'); } catch (e) {}
   $('login').style.display = '';
   $('toolbar').classList.remove('show');
   $('summary').classList.remove('show');
   $('list').innerHTML = '';
-  $('password').value = '';
+  $('passcode').value = '';
 }
-$('logout-btn').addEventListener('click', signOut);
+$('lock-btn').addEventListener('click', lock);
 $('refresh-btn').addEventListener('click', loadSubmissions);
 $('search').addEventListener('input', render);
 $('filter').addEventListener('change', render);
@@ -246,9 +198,9 @@ $('filter').addEventListener('change', render);
 async function loadSubmissions() {
   $('list').innerHTML = '<div class="empty">Loading…</div>';
   try {
-    const res = await fetch(FIREBASE_DB_URL + '/submissions.json?auth=' + encodeURIComponent(idToken) + '&orderBy="timestamp"');
+    const res = await fetch(FIREBASE_DB_URL + '/submissions.json');
     if (res.status === 401 || res.status === 403) {
-      $('list').innerHTML = '<div class="empty">Access denied. Your login may lack read permission — check the database rules for /submissions.</div>';
+      $('list').innerHTML = '<div class="empty">Access denied. Set the /submissions read rule to true in your database rules.</div>';
       return;
     }
     if (!res.ok) throw new Error('HTTP ' + res.status);
