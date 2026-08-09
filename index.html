@@ -35,9 +35,10 @@
   --shadow-sm: 0 1px 3px rgba(20,25,39,.06),0 1px 2px rgba(20,25,39,.04);
   --shadow-md: 0 4px 16px rgba(20,25,39,.07),0 1px 4px rgba(20,25,39,.04);
   --shadow-lg: 0 12px 40px rgba(20,25,39,.1),0 2px 8px rgba(20,25,39,.04);
-  --glow-1: rgba(79,109,245,.20);
-  --glow-2: rgba(124,77,255,.16);
-  --glow-3: rgba(45,170,255,.11);
+  --glow-1: rgba(79,109,245,.34);
+  --glow-2: rgba(124,77,255,.28);
+  --glow-3: rgba(45,170,255,.20);
+  --grid-dot: rgba(20,25,39,.05);
   --mono: 'Cascadia Code','JetBrains Mono','Fira Code','Consolas','SF Mono','Monaco',monospace;
   --sans: 'Inter','Segoe UI',system-ui,-apple-system,'Helvetica Neue',sans-serif;
   --r: 12px;
@@ -57,7 +58,7 @@
   --shadow-sm:0 1px 3px rgba(0,0,0,.3);
   --shadow-md:0 4px 16px rgba(0,0,0,.3);
   --shadow-lg:0 12px 40px rgba(0,0,0,.4);
-  --glow-1:rgba(108,138,255,.22);--glow-2:rgba(167,139,250,.17);--glow-3:rgba(56,189,248,.11);
+  --glow-1:rgba(108,138,255,.36);--glow-2:rgba(167,139,250,.30);--glow-3:rgba(56,189,248,.20);--grid-dot:rgba(255,255,255,.05);
 }}
 :root[data-theme="dark"]{
   --bg:#0E1117;--surface:#161B26;--surface-alt:#1C2233;
@@ -72,7 +73,7 @@
   --shadow-sm:0 1px 3px rgba(0,0,0,.3);
   --shadow-md:0 4px 16px rgba(0,0,0,.3);
   --shadow-lg:0 12px 40px rgba(0,0,0,.4);
-  --glow-1:rgba(108,138,255,.22);--glow-2:rgba(167,139,250,.17);--glow-3:rgba(56,189,248,.11);
+  --glow-1:rgba(108,138,255,.36);--glow-2:rgba(167,139,250,.30);--glow-3:rgba(56,189,248,.20);--grid-dot:rgba(255,255,255,.05);
 }
 :root[data-theme="light"]{
   --bg:#F4F6FB;--surface:#FFFFFF;--surface-alt:#EDF0F7;
@@ -98,7 +99,11 @@ body{
   background-attachment:fixed;
   color:var(--text-1);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh
 }
-.page{max-width:880px;margin:0 auto;padding:2rem 1.5rem 4rem}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:radial-gradient(var(--grid-dot) 1px,transparent 1px);background-size:24px 24px;
+  -webkit-mask-image:radial-gradient(circle at 50% 22%,#000,transparent 78%);
+  mask-image:radial-gradient(circle at 50% 22%,#000,transparent 78%)}
+.page{max-width:880px;margin:0 auto;padding:2rem 1.5rem 4rem;position:relative}
 
 /* ─── Header ─── */
 .hdr{
