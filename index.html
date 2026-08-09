@@ -380,16 +380,16 @@ textarea.form-input{min-height:100px;resize:vertical;font-family:var(--sans)}
   <header class="hdr">
     <div class="hdr-eyebrow">Project Seal</div>
     <h1 class="hdr-title">QC Checker</h1>
-    <p class="hdr-sub">Paste your metadata.md content below. Automated checks run instantly in your browser — nothing is uploaded.</p>
+    <p class="hdr-sub">Copy and paste your entire task below. Automated checks run instantly in your browser — nothing is uploaded.</p>
     <div style="font-size:.72rem;margin-top:.7rem;opacity:.7">By P Manikanta · <a href="https://github.com/PSPMANI" target="_blank" rel="noopener" style="color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.4)">@PSPMANI</a></div>
   </header>
 
   <div class="howto">
     <div class="howto-title">How to use</div>
     <ol>
-      <li>Open your task's <code>metadata.md</code> file</li>
-      <li>Select all (<kbd>Ctrl+A</kbd>) and copy (<kbd>Ctrl+C</kbd>)</li>
-      <li>Paste into the box below and click <strong>Run QC Audit</strong></li>
+      <li>Open your full task and select everything (<kbd>Ctrl+A</kbd>)</li>
+      <li>Copy it all (<kbd>Ctrl+C</kbd>)</li>
+      <li>Paste the whole task into the box below and click <strong>Run QC Audit</strong></li>
     </ol>
   </div>
 
@@ -397,13 +397,13 @@ textarea.form-input{min-height:100px;resize:vertical;font-family:var(--sans)}
     <div class="qc-note-icon">!</div>
     <div class="qc-note-body">
       <div class="qc-note-title">Please read</div>
-      This QC tool only runs <strong>quality checks</strong> — it does <strong>not</strong> test or generate your model response. You still need to test your prompt yourself in <strong>ChatGPT 5.5 Pro (extended thinking)</strong> and paste the model's response into your <code>metadata.md</code>. Here, the tool only helps you catch <strong>errors</strong> and verify the <strong>checklists</strong>.
+      This QC tool only runs <strong>quality checks</strong> — it does <strong>not</strong> test or generate your model response. You still need to test your prompt yourself in <strong>ChatGPT 5.5 Pro (extended thinking)</strong> and paste the model's response into your task before running it here. This tool only helps you catch <strong>errors</strong> and verify the <strong>checklists</strong>.
     </div>
   </div>
 
   <div class="input-wrap">
-    <div class="input-label">Input <span>— full metadata.md contents</span></div>
-    <textarea id="metadata-input" placeholder="Paste the full contents of your metadata.md file here..."></textarea>
+    <div class="input-label">Input <span>— your entire task, copied and pasted</span></div>
+    <textarea id="metadata-input" placeholder="Copy and paste your entire task here..."></textarea>
     <div class="actions">
       <button class="btn btn-run" id="run-btn">Run QC Audit</button>
       <button class="btn btn-clear" id="clear-btn">Clear</button>
@@ -884,7 +884,7 @@ document.getElementById('run-btn').addEventListener('click', () => {
   errEl.style.display = 'none';
 
   if (!raw) {
-    errEl.textContent = 'Paste your metadata.md content first.';
+    errEl.textContent = 'Copy and paste your entire task first.';
     errEl.style.display = 'block';
     return;
   }
@@ -894,7 +894,7 @@ document.getElementById('run-btn').addEventListener('click', () => {
     data.trajectorySteps.length > 0, data.sources.length > 0].filter(Boolean).length;
 
   if (found < 2) {
-    errEl.textContent = 'Could not parse the pasted content. Make sure you pasted the complete contents of your metadata.md file.';
+    errEl.textContent = 'Could not parse the pasted content. Make sure you copied and pasted your complete task.';
     errEl.style.display = 'block';
     document.getElementById('results').classList.remove('show');
     document.getElementById('results').style.display = 'none';
