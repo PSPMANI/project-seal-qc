@@ -119,6 +119,26 @@ body{background:var(--bg);color:var(--text-1);font-family:var(--sans);font-size:
 .howto li{margin-bottom:.3rem}
 .howto code{font-family:var(--mono);font-size:.72rem;background:var(--accent-soft);color:var(--accent);padding:.15em .45em;border-radius:4px;font-weight:500}
 
+/* ─── Notice ─── */
+.qc-note{
+  display:flex;gap:.9rem;align-items:flex-start;
+  background:var(--warn-bg);border:1px solid var(--warn-border);
+  border-left:4px solid var(--warn);border-radius:var(--r);
+  padding:1.1rem 1.4rem;margin-bottom:1.5rem;box-shadow:var(--shadow-sm);
+}
+.qc-note-icon{
+  flex-shrink:0;width:1.6rem;height:1.6rem;border-radius:50%;
+  background:var(--warn);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:.9rem;margin-top:.05rem;
+}
+.qc-note-body{font-size:.85rem;line-height:1.65;color:var(--text-2)}
+.qc-note-title{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  font-weight:700;color:var(--warn);margin-bottom:.35rem;
+}
+.qc-note-body strong{color:var(--text-1);font-weight:700}
+.qc-note-body code{font-family:var(--mono);font-size:.74rem;background:var(--surface);color:var(--text-1);padding:.15em .45em;border-radius:4px;border:1px solid var(--border);font-weight:600}
+
 /* ─── Input ─── */
 .input-wrap{margin-bottom:2rem}
 .input-label{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem}
@@ -371,6 +391,14 @@ textarea.form-input{min-height:100px;resize:vertical;font-family:var(--sans)}
       <li>Select all (<kbd>Ctrl+A</kbd>) and copy (<kbd>Ctrl+C</kbd>)</li>
       <li>Paste into the box below and click <strong>Run QC Audit</strong></li>
     </ol>
+  </div>
+
+  <div class="qc-note">
+    <div class="qc-note-icon">!</div>
+    <div class="qc-note-body">
+      <div class="qc-note-title">Please read</div>
+      This QC tool only runs <strong>quality checks</strong> — it does <strong>not</strong> test or generate your model response. You still need to test your prompt yourself in <strong>ChatGPT 5.5 Pro (extended thinking)</strong> and paste the model's response into your <code>metadata.md</code>. Here, the tool only helps you catch <strong>errors</strong> and verify the <strong>checklists</strong>.
+    </div>
   </div>
 
   <div class="input-wrap">
